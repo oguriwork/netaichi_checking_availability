@@ -15,7 +15,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 
 from utils import AppLogger
 
-from .deco import ensure_driver_exists, randam_sleep
+from .deco import randam_sleep
 
 
 class ChromeBrowser:
@@ -29,7 +29,6 @@ class ChromeBrowser:
         self.new()
 
     @property
-    @ensure_driver_exists
     def current_url(self) -> str:
         return self.driver.current_url
 
@@ -73,13 +72,11 @@ class ChromeBrowser:
             del self.driver
 
     @randam_sleep
-    @ensure_driver_exists
     def go_page(self, url: str) -> None:
         self.driver.get(url)
         self.logger.info(f"Navigated to: {url}")
 
     @randam_sleep
-    @ensure_driver_exists
     def send_form(self, selector: str, value: str) -> bool:
         if not isinstance(value, str):
             value = str(value)
@@ -93,7 +90,6 @@ class ChromeBrowser:
         return False
 
     @randam_sleep
-    @ensure_driver_exists
     def click(self, selector: str, index: int = 0) -> None:
         if index < 0:
             raise ValueError("Index must be non-negative")
@@ -106,7 +102,6 @@ class ChromeBrowser:
         self.logger.info(f"Clicked element: {selector}[{index}]")
 
     @randam_sleep
-    @ensure_driver_exists
     def alert_switch(self, accept: bool) -> None:
         self.wait_alert(3)
         if accept:
@@ -117,7 +112,6 @@ class ChromeBrowser:
             self.logger.info("Alert dismissed")
 
     @randam_sleep
-    @ensure_driver_exists
     def wait_alert(self, timeout: int = 3) -> None:
         if timeout <= 0:
             raise ValueError("Timeout must be positive")
@@ -125,7 +119,6 @@ class ChromeBrowser:
         WebDriverWait(self.driver, timeout).until(EC.alert_is_present())
 
     @randam_sleep
-    @ensure_driver_exists
     def js_exec(self, code: str) -> Any:
         if not code or not isinstance(code, str):
             raise ValueError("JavaScript code must be a non-empty string")
@@ -135,7 +128,6 @@ class ChromeBrowser:
         return result
 
     @randam_sleep
-    @ensure_driver_exists
     def drag_and_drop(self, source: WebElement, target_selector: str) -> None:
         if not isinstance(source, WebElement):
             raise ValueError("Source must be a WebElement")
@@ -150,7 +142,6 @@ class ChromeBrowser:
         self.logger.info(f"Drag and drop completed to: {target_selector}")
 
     @randam_sleep
-    @ensure_driver_exists
     def scroll_into_view(
         self, selector: str, position: ScrollPosition = ScrollPosition.START
     ) -> None:
@@ -166,7 +157,6 @@ class ChromeBrowser:
         )
         self.logger.info(f"Scrolled element into view: {selector}")
 
-    @ensure_driver_exists
     def get_elements(
         self, selector: str, by: str = By.CSS_SELECTOR, base: WebElement | None = None
     ) -> list[WebElement]:
@@ -288,17 +278,14 @@ class ChromeBrowser:
         radio = self.get_input_value(value)
         radio.send_keys(Keys.SPACE)
 
-    @ensure_driver_exists
     def refresh_page(self) -> None:
         self.driver.refresh()
         self.logger.info("Page refreshed")
 
-    @ensure_driver_exists
     def go_back(self) -> None:
         self.driver.back()
         self.logger.info("Navigated back")
 
-    @ensure_driver_exists
     def go_forward(self) -> None:
         self.driver.forward()
         self.logger.info("Navigated forward")

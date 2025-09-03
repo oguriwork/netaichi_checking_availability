@@ -19,11 +19,6 @@ from .deco import ensure_driver_exists, randam_sleep
 from .errors import ElementNotFoundError
 
 
-class ScrollPosition(Enum):
-    START = "start"
-    CENTER = "center"
-    END = "end"
-    NEAREST = "nearest"
 
 
 class ChromeBrowser:

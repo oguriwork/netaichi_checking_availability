@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "netaichi-checking-availability"
+version = "0.1.0"
+description = ""
+authors = ["oguriwork <oguri.ncv@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+selenium = "^4.35.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

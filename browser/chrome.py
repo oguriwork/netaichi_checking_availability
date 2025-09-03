@@ -3,6 +3,7 @@ from __future__ import annotations
 from enum import Enum
 from typing import Any
 
+from browser.constants import ScrollPosition
 from selenium import webdriver
 from selenium.webdriver import Chrome as WebDriver
 from selenium.webdriver.common.action_chains import ActionChains
@@ -16,7 +17,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from core.utils import AppLogger
 
 from .deco import ensure_driver_exists, randam_sleep
-from .errors import ElementNotFoundError
+
 
 
 
@@ -45,8 +46,7 @@ class ChromeBrowser:
         self.quit()
 
     def new(self) -> WebDriver:
-        from core.config.browser import OPTIONS
-
+        from .__options import OPTIONS
         options = webdriver.ChromeOptions()
         if self.is_headless:
             options.add_argument("--headless=new")
@@ -99,7 +99,7 @@ class ChromeBrowser:
 
         element = self.get_element_by_css(selector, index)
         if not element:
-            raise ElementNotFoundError(f"Element not found for selector: {selector}")
+            raise RuntimeError(f"Element not found for selector: {selector}")
 
         element.click()
         self.logger.info(f"Clicked element: {selector}[{index}]")
@@ -141,7 +141,7 @@ class ChromeBrowser:
 
         target = self.get_element_by_css(target_selector)
         if not target:
-            raise ElementNotFoundError(f"Drop target not found: {target_selector}")
+            raise RuntimeError(f"Drop target not found: {target_selector}")
 
         actions = ActionChains(self.driver)
         actions.drag_and_drop(source, target)
@@ -156,7 +156,7 @@ class ChromeBrowser:
 
         element = self.get_element_by_css(selector)
         if not element:
-            raise ElementNotFoundError(f"Element not found for scrolling: {selector}")
+            raise RuntimeError(f"Element not found for scrolling: {selector}")
 
         self.driver.execute_script(f'arguments[0].scrollIntoView({{block: "{position.value}"}});', element)
         self.logger.info(f"Scrolled element into view: {selector}")
@@ -184,7 +184,7 @@ class ChromeBrowser:
 
         elements = self.get_elements(selector, by, base)
         if not elements or index >= len(elements):
-            raise ElementNotFoundError(f"Element not found for selector: {selector} with index: {index}")
+            raise RuntimeError(f"Element not found for selector: {selector} with index: {index}")
 
         return elements[index]
 
@@ -254,7 +254,7 @@ class ChromeBrowser:
 
         element = self.get_element_by_css(selector)
         if not element:
-            raise ElementNotFoundError(f"Select element not found for selector: {selector}")
+            raise RuntimeError(f"Select element not found for selector: {selector}")
 
         self.select_by_index(element, index - 1)
 
@@ -264,7 +264,7 @@ class ChromeBrowser:
 
         ele = self.get_element_by_css(f'input[value="{value}"]')
         if not ele:
-            raise ElementNotFoundError(f"Radio button not found for value: {value}")
+            raise RuntimeError(f"Radio button not found for value: {value}")
         return ele
 
     def select_radio_by_value(self, value: str) -> None:

@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from enum import Enum
 from typing import Any
 
 from browser.constants import ScrollPosition
@@ -14,12 +13,9 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.select import Select
 from selenium.webdriver.support.ui import WebDriverWait
 
-from core.utils import AppLogger
+from utils import AppLogger
 
 from .deco import ensure_driver_exists, randam_sleep
-
-
-
 
 
 class ChromeBrowser:
@@ -42,11 +38,14 @@ class ChromeBrowser:
             self.new()
         return self
 
-    def __exit__(self, ex_type: type | None, ex_value: Exception | None, trace: Any | None) -> None:
+    def __exit__(
+        self, ex_type: type | None, ex_value: Exception | None, trace: Any | None
+    ) -> None:
         self.quit()
 
     def new(self) -> WebDriver:
-        from .__options import OPTIONS
+        from ._options import OPTIONS
+
         options = webdriver.ChromeOptions()
         if self.is_headless:
             options.add_argument("--headless=new")
@@ -54,7 +53,9 @@ class ChromeBrowser:
         for option in OPTIONS:
             options.add_argument(option)
 
-        options.add_experimental_option("excludeSwitches", ["enable-automation", "enable-logging"])
+        options.add_experimental_option(
+            "excludeSwitches", ["enable-automation", "enable-logging"]
+        )
 
         options.timeouts = {"implicit": self.default_timeout * 1000}
 
@@ -150,7 +151,9 @@ class ChromeBrowser:
 
     @randam_sleep
     @ensure_driver_exists
-    def scroll_into_view(self, selector: str, position: ScrollPosition = ScrollPosition.START) -> None:
+    def scroll_into_view(
+        self, selector: str, position: ScrollPosition = ScrollPosition.START
+    ) -> None:
         if not isinstance(position, ScrollPosition):
             raise ValueError("Position must be a ScrollPosition enum value")
 
@@ -158,7 +161,9 @@ class ChromeBrowser:
         if not element:
             raise RuntimeError(f"Element not found for scrolling: {selector}")
 
-        self.driver.execute_script(f'arguments[0].scrollIntoView({{block: "{position.value}"}});', element)
+        self.driver.execute_script(
+            f'arguments[0].scrollIntoView({{block: "{position.value}"}});', element
+        )
         self.logger.info(f"Scrolled element into view: {selector}")
 
     @ensure_driver_exists
@@ -178,17 +183,23 @@ class ChromeBrowser:
 
         return elements
 
-    def get_element(self, selector: str, by: str, index: int = 0, base: WebElement | None = None) -> WebElement:
+    def get_element(
+        self, selector: str, by: str, index: int = 0, base: WebElement | None = None
+    ) -> WebElement:
         if index < 0:
             raise ValueError("Index must be non-negative")
 
         elements = self.get_elements(selector, by, base)
         if not elements or index >= len(elements):
-            raise RuntimeError(f"Element not found for selector: {selector} with index: {index}")
+            raise RuntimeError(
+                f"Element not found for selector: {selector} with index: {index}"
+            )
 
         return elements[index]
 
-    def get_elements_by_css(self, css_selector: str, base: WebElement | None = None) -> list[WebElement]:
+    def get_elements_by_css(
+        self, css_selector: str, base: WebElement | None = None
+    ) -> list[WebElement]:
         return self.get_elements(css_selector, By.CSS_SELECTOR, base)
 
     def get_element_by_css(
@@ -196,7 +207,9 @@ class ChromeBrowser:
     ) -> WebElement | None:
         return self.get_element(css_selector, By.CSS_SELECTOR, index, base)
 
-    def get_elements_by_contains_text(self, path: str, text: str, base: WebElement | None = None) -> list[WebElement]:
+    def get_elements_by_contains_text(
+        self, path: str, text: str, base: WebElement | None = None
+    ) -> list[WebElement]:
         if not path or not isinstance(path, str):
             raise ValueError("Path must be a non-empty string")
 
@@ -215,10 +228,14 @@ class ChromeBrowser:
 
         return elements[index]
 
-    def get_element_by_xpath(self, xpath: str, index: int = 0, base: WebElement | None = None) -> WebElement | None:
+    def get_element_by_xpath(
+        self, xpath: str, index: int = 0, base: WebElement | None = None
+    ) -> WebElement | None:
         return self.get_element(xpath, By.XPATH, index, base)
 
-    def get_elements_by_xpath(self, xpath: str, base: WebElement | None = None) -> list[WebElement]:
+    def get_elements_by_xpath(
+        self, xpath: str, base: WebElement | None = None
+    ) -> list[WebElement]:
         return self.get_elements(xpath, By.XPATH, base)
 
     def select_by_index(self, select_element: WebElement, index: int) -> None:

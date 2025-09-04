@@ -15,7 +15,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 
 from utils import AppLogger
 
-from .deco import randam_sleep
+from .decorator import randam_sleep
 
 
 class ChromeBrowser:

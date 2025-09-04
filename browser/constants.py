@@ -1,5 +1,3 @@
-
-
 from enum import Enum
 
 
@@ -8,5 +6,3 @@ class ScrollPosition(Enum):
     CENTER = "center"
     END = "end"
     NEAREST = "nearest"
-
-

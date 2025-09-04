@@ -1,9 +1,7 @@
-
 from __future__ import annotations
 
 from collections.abc import Callable
 from functools import wraps
-
 
 
 def randam_sleep(func: Callable):

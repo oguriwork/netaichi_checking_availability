@@ -1,1 +1,3 @@
-from site import NetAichi
+from .site import NetAichi
+
+_all_ = ["NetAichi"]

@@ -1,9 +1,5 @@
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.support.ui import WebDriverWait
 from enum import Enum, auto
 from functools import wraps
-
-
 
 
 class PAGE_STATUS(Enum):
@@ -20,6 +16,8 @@ class PAGE_STATUS(Enum):
 
     def __str__(self):
         return self.name.lower()
+
+
 def update(func=None, *, via_mypage=True):
     def decorator(func):
         @wraps(func)
@@ -29,7 +27,9 @@ def update(func=None, *, via_mypage=True):
 
             # すでに目的のページにいるならスキップ
             if expected_status and self.current_page == expected_status:
-                self.browser.logger.debug(f"すでに {expected_status} にいるため {func.__name__} をスキップ")
+                self.browser.logger.debug(
+                    f"すでに {expected_status} にいるため {func.__name__} をスキップ"
+                )
                 return self.current_page
 
             # MYPAGE を経由する必要がある場合のみ
@@ -43,7 +43,9 @@ def update(func=None, *, via_mypage=True):
             if isinstance(result, PAGE_STATUS):
                 if old_url != self.browser.current_url:
                     self.browser.logger.debug(f"ページ遷移: {result}")
-                    self.browser.logger.debug(f"{old_url} -> {self.browser.current_url}")
+                    self.browser.logger.debug(
+                        f"{old_url} -> {self.browser.current_url}"
+                    )
                 self.current_page = result
 
             return result or self.current_page

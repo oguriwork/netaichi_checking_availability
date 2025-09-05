@@ -57,3 +57,18 @@ def update(func=None, *, via_mypage=True):
         return decorator
     else:
         return decorator(func)
+def require_status(*allowed_statuses: PAGE_STATUS):
+    """
+    指定したステータス以外では呼べないようにするデコレーター
+    """
+    def decorator(func):
+        @wraps(func)
+        def wrapper(self, *args, **kwargs):
+            if self.current_page not in allowed_statuses:
+                raise RuntimeError(
+                    f"{func.__name__} は {', '.join(map(str, allowed_statuses))} "
+                    f"の状態でしか呼べません。現在の状態: {self.current_page}"
+                )
+            return func(self, *args, **kwargs)
+        return wrapper
+    return decorator

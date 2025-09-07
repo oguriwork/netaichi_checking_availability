@@ -1,3 +1,3 @@
 from .site import NetAichi
 
-_all_ = ["NetAichi"]
+__all__ = ["NetAichi"]

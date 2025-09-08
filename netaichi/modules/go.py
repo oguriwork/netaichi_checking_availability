@@ -1,7 +1,7 @@
 from __future__ import annotations
 from collections.abc import Generator
 from ..module_base import ModuleBase
-from ._go_status import PAGE_STATUS, update
+from ._go_status import PAGE_STATUS, update,require_status
 
 
 class Go(ModuleBase):
@@ -37,22 +37,22 @@ class Go(ModuleBase):
         self.site.click(self.SELECTER_MYPAGE, 1)
         return PAGE_STATUS.MYPAGE
 
-    @update
+    @update(via_mypage=True)
     def lottery(self) -> PAGE_STATUS:
         self.site.click(self.SELECTER_LOTTERY)
         return PAGE_STATUS.LOTTERY
 
-    @update
+    @update(via_mypage=True)
     def reservation(self) -> PAGE_STATUS:
         self.site.click(self.SELECTER_RESERVATION)
         return PAGE_STATUS.RESERVATION
 
-    @update(PAGE_STATUS.RESERVATION_LIST)
+    @update(PAGE_STATUS.RESERVATION_LIST,via_mypage=True)
     def reservation_list(self) -> Generator[int]:
         self.site.click(self.SELECTER_LIST, 0)
         return self.loop_list()
 
-    @update(PAGE_STATUS.LOTTERY_LIST)
+    @update(PAGE_STATUS.LOTTERY_LIST,via_mypage=True)
     def lottery_list(self) -> Generator[int]:
         self.site.click(self.SELECTER_LIST, 1)
         return self.loop_list()
@@ -87,6 +87,12 @@ class Go(ModuleBase):
         return PAGE_STATUS.RESERVATION_LIST
 
     def notlogin_reserve(self):
+<<<<<<< HEAD
         self.site.go_page(self.BASE_URL)
         BTN_NOTLOGIN_RESERVE = "#facility02_on"
         self.site.click(BTN_NOTLOGIN_RESERVE)
+=======
+        self.top()
+        
+        self.site.click(self.BTN_NOTLOGIN_RESERVE)
+>>>>>>> fb0942951f1217181f0921aa9d475c53747c43c4

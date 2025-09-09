@@ -289,10 +289,8 @@ class ChromeBrowser:
     def go_forward(self) -> None:
         self.driver.forward()
         self.logger.info("Navigated forward")
+
     @randam_sleep
     def get_html(self) -> BeautifulSoup:
         return BeautifulSoup(self.driver.page_source, 'lxml')
 
-    @property
-    def current_url(self) -> str:
-        return self.driver.current_url

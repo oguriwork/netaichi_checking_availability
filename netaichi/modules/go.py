@@ -20,18 +20,20 @@ class Go(ModuleBase):
     SELECTER_BTN_CONFIRM = 'input[value="確定"]'
     SELECTER_BTN_BACK = 'input[value="戻る"]'
 
+    def top(self) -> PAGE_STATUS:
+        self.site.go_page(self.site.BASE_URL)
+        return PAGE_STATUS.TOP
     # allow_anonymous
     @update
     def login(self) -> PAGE_STATUS:
-        self.site.go_page(self.site.BASE_URL)
+        self.top()
         self.site.click(self.SELECTER_LOGIN)
         return PAGE_STATUS.LOGIN
-
     @update
     def logout(self) -> PAGE_STATUS:
         self.site.click(self.SELECTER_BTN_LOGOUT)
-        return PAGE_STATUS.LOGOUT
-
+        self.logged_account = None
+        return PAGE_STATUS.TOP
     @update
     def mypage(self) -> PAGE_STATUS:
         self.site.click(self.SELECTER_MYPAGE, 1)
@@ -87,12 +89,5 @@ class Go(ModuleBase):
         return PAGE_STATUS.RESERVATION_LIST
 
     def notlogin_reserve(self):
-<<<<<<< HEAD
-        self.site.go_page(self.BASE_URL)
-        BTN_NOTLOGIN_RESERVE = "#facility02_on"
-        self.site.click(BTN_NOTLOGIN_RESERVE)
-=======
         self.top()
-        
         self.site.click(self.BTN_NOTLOGIN_RESERVE)
->>>>>>> fb0942951f1217181f0921aa9d475c53747c43c4

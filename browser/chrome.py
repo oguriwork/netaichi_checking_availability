@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from typing import Any
-
+from bs4 import BeautifulSoup
 from browser.constants import ScrollPosition
 from selenium import webdriver
 from selenium.webdriver import Chrome as WebDriver
@@ -289,3 +289,10 @@ class ChromeBrowser:
     def go_forward(self) -> None:
         self.driver.forward()
         self.logger.info("Navigated forward")
+    @randam_sleep
+    def get_html(self) -> BeautifulSoup:
+        return BeautifulSoup(self.driver.page_source, 'lxml')
+
+    @property
+    def current_url(self) -> str:
+        return self.driver.current_url

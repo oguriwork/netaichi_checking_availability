@@ -1,7 +1,8 @@
 from browser import ChromeBrowser
 from config import settings
 from netaichi import NetAichi
-from interface import I_Account
+from interfaces.account import I_Account
+
 browser = ChromeBrowser(settings.IS_HEADLESS)
 netaichi = NetAichi(browser)
 
@@ -16,14 +17,9 @@ def reserve():
 
 # 自分用
 def lottry():
-    account = I_Account(
-        id=settings.ACCOUNT_ID,
-        password=ACCOUNT_PASSWORD,
-        name="me"
-        )
+    account = I_Account(id=settings.ACCOUNT_ID, password=ACCOUNT_PASSWORD, name="me")
     netaichi.login(account)
     add_lottery()
-    
 
 
 if __name__ == "__main__":

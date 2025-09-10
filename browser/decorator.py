@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from collections.abc import Callable
-from functools import wraps
 
 
 def randam_sleep(func: Callable):
@@ -14,13 +13,3 @@ def randam_sleep(func: Callable):
         return v
 
     return _wrapper
-
-
-def ensure_driver_exists(func: Callable) -> Callable:
-    @wraps(func)
-    def wrapper(self, *args, **kwargs):
-        if not self.driver:
-            raise RuntimeError("Browser driver is not initialized. Call new() first.")
-        return func(self, *args, **kwargs)
-
-    return wrapper

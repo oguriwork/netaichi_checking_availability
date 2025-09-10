@@ -1,8 +1,9 @@
 from __future__ import annotations
 from collections.abc import Generator
 from ..module_base import ModuleBase
-from ._go_status import PAGE_STATUS, update,require_status
+from ._page_status import PAGE_STATUS, update
 from dataclasses import dataclass
+
 
 @dataclass(frozen=True)
 class Selector:
@@ -18,27 +19,31 @@ class Selector:
     BTN_CHECK = 'input[value="確認"]'
     BTN_CONFIRM = 'input[value="確定"]'
     BTN_BACK = 'input[value="戻る"]'
-
+    BTN_NOTLOGIN_RESERVE = 'input[value="ログインせずに申し込む"]'
 
 
 class Go(ModuleBase):
+    selectors: Selector
     current_page = None
     BASE_URL = "https://www4.pref.aichi.jp/yoyaku/"
-    
+
     def top(self) -> PAGE_STATUS:
         self.site.go_page(self.site.BASE_URL)
         return PAGE_STATUS.TOP
+
     # allow_anonymous
     @update
     def login(self) -> PAGE_STATUS:
         self.top()
         self.site.click(self.selectors.LOGIN)
         return PAGE_STATUS.LOGIN
+
     @update
     def logout(self) -> PAGE_STATUS:
         self.site.click(self.selectors.BTN_LOGOUT)
         self.logged_account = None
         return PAGE_STATUS.TOP
+
     @update
     def mypage(self) -> PAGE_STATUS:
         self.site.click(self.selectors.MYPAGE, 1)
@@ -54,12 +59,12 @@ class Go(ModuleBase):
         self.site.click(self.selectors.RESERVATION)
         return PAGE_STATUS.RESERVATION
 
-    @update(PAGE_STATUS.RESERVATION_LIST,via_mypage=True)
+    @update(PAGE_STATUS.RESERVATION_LIST, via_mypage=True)
     def reservation_list(self) -> Generator[int]:
         self.site.click(self.selectors.LIST, 0)
         return self.loop_list()
 
-    @update(PAGE_STATUS.LOTTERY_LIST,via_mypage=True)
+    @update(PAGE_STATUS.LOTTERY_LIST, via_mypage=True)
     def lottery_list(self) -> Generator[int]:
         self.site.click(self.selectors.LIST, 1)
         return self.loop_list()
@@ -95,4 +100,4 @@ class Go(ModuleBase):
 
     def notlogin_reserve(self):
         self.top()
-        self.site.click(self.BTN_NOTLOGIN_RESERVE)
+        self.site.click(self.selectors.BTN_NOTLOGIN_RESERVE)

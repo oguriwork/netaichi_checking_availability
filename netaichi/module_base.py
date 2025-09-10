@@ -8,7 +8,7 @@ class ModuleBase:
     def __init__(self, site):
         self.site = site
         self.browser: ChromeBrowser = site.browser
-        
+
     def __init_subclass__(cls, **kwargs):
         super().__init_subclass__(**kwargs)
 

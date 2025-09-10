@@ -31,7 +31,7 @@ class NetAichi:
             self.go.login()
             self.auth.login(account)
           
-    def logout(self) -> None:
+    def logout(self) -> PAGE_STATUS:
         return self.auth.logout()
 
     def get_status(self)->LotteryStatus:
@@ -46,3 +46,11 @@ class NetAichi:
     def all_entries(self) -> list[LotteryEntry]:
         return [e.core() for e in self.yield_lottery_entries()]
     
+    def __get_amount(self) -> list[int]:
+        self.go.mypage()
+        elements = self.fetcher.mypage_amounts()
+        return elements
+    def lottery_amount(self) -> int:
+        return self.__get_amount()[1]
+    def reserve_amount(self) -> int:
+        return self.__get_amount()[0]

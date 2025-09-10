@@ -1,8 +1,9 @@
 from ..module_base import ModuleBase
 from ._go_status import PAGE_STATUS, update
+from dataclasses import dataclass
 
-class Fetcher(ModuleBase):
-    entries_list: list[LotteryEntry] = []
+@dataclass(frozen=True)
+class Selector:
     DATE = "#useymdLabel"
     START = "#stimeLabel"
     END = "#etimeLabel"
@@ -14,13 +15,17 @@ class Fetcher(ModuleBase):
     STATUS_COUNT = "#allCount"  # 件数
     STATUS_ZONE = "#allTzonecnt"  # 時間帯
     STATUS_ALL = "#allTimeLabel"  # 合計時間
+    MYPAGE_AMOUNTS = '#lotNum'
+
+class Fetcher(ModuleBase):
+    entries_list: list[LotteryEntry] = []
     
     def lottery_status(self) -> LotteryStatus:
         # 今取得できるページにいるとして
-        summary_alltime = self.browser.get_element_by_css(self.STATUS_ALL).text
-        summary_zone = self.browser.get_element_by_css(self.STATUS_ZONE).text
-        summary_count = self.browser.get_element_by_css(self.STATUS_COUNT).text
-        soup = self.browser.fetcher.html()
+        summary_alltime = self.browser.get_element_by_css(self.selectors.STATUS_ALL).text
+        summary_zone = self.browser.get_element_by_css(self.selectors.STATUS_ZONE).text
+        summary_count = self.browser.get_element_by_css(self.selectors.STATUS_COUNT).text
+        soup = self.browser.get_html()
         dl = soup.select_one(".smenu > dl")
         court_names = dl.select("dt")
         court_counts = dl.select("dd")
@@ -47,12 +52,12 @@ class Fetcher(ModuleBase):
     
     def _parse_row(self, row: WebElement) -> LotteryEntry:
         link = self.site.get_element_by_css("内容確認", By.LINK_TEXT, base=row)
-        date_text = self.site.get_element_by_css(self.DATE, base=row).text.strip()
-        start_text = self.site.get_element_by_css(self.START, base=row).text.strip()
-        end_text = self.site.get_element_by_css(self.END, base=row).text.strip()
-        court_name = self.site.get_element_by_css(self.COURT, base=row).text.strip()
-        # result = self.site.get_element_by_css(self.RESULT, base=row).text.strip()
-        amount_text = self.site.get_element_by_css(self.AMOUNT, base=row).text.strip()
+        date_text = self.site.get_element_by_css(self.selectors.DATE, base=row).text.strip()
+        start_text = self.site.get_element_by_css(self.selectors.START, base=row).text.strip()
+        end_text = self.site.get_element_by_css(self.selectors.END, base=row).text.strip()
+        court_name = self.site.get_element_by_css(self.selectors.COURT, base=row).text.strip()
+        # result = self.site.get_element_by_css(self.selectors.RESULT, base=row).text.strip()
+        amount_text = self.site.get_element_by_css(self.selectors.AMOUNT, base=row).text.strip()
 
         # データ変換
         date = to_datetime(date_text)
@@ -77,5 +82,5 @@ class Fetcher(ModuleBase):
 
     
 
-    def amount(self) -> int:
-        return self.site.fetcher._get_amount()[1]
+    def mypage_amounts(self) -> list[int]:
+        return self.browser.get_elements_by_css(self.selectors.MYPAGE_AMOUNTS)

@@ -1,7 +1,11 @@
+from unicodedata import normalize
 from ..module_base import ModuleBase
-from ._page_status import PAGE_STATUS, update
 from dataclasses import dataclass
-from interfaces import LotteryEntry, LotteryStatus, SummaryInfo, CourtInfo
+from interfaces import LotteryEntry, LotteryStatus, CourtInfo, SummaryInfo
+from typing import Iterator
+from selenium.webdriver.common.by import By
+from selenium.webdriver.remote.webelement import WebElement
+from utils import to_datetime
 
 
 @dataclass(frozen=True)
@@ -35,6 +39,8 @@ class Fetcher(ModuleBase):
         ).text
         soup = self.browser.get_html()
         dl = soup.select_one(".smenu > dl")
+        if dl is None:
+            raise ValueError("court info not found")
         court_names = dl.select("dt")
         court_counts = dl.select("dd")
         court_infos = []
@@ -43,19 +49,21 @@ class Fetcher(ModuleBase):
             count = int(count.text.split("件")[0])
             if name == "申し込み合計":
                 continue
-            value = self.site.court.to_value(name)
-            court_info = CourtInfo(value=value, applications=count)
+            value = self.site.courts.to_value(name)
+            court_info = CourtInfo(value=value, applications=count, name=name)
             court_infos.append(court_info)
 
         summary = SummaryInfo(
-            alltime=summary_alltime, zone=summary_zone, count=summary_count
+            alltime=int(summary_alltime),
+            zone=int(summary_zone),
+            count=int(summary_count),
         )
         return LotteryStatus(court_infos=court_infos, summary=summary)
 
     def times(self) -> list[int]:
         return [
             int(normalize("NFKC", time.text[:-2]))
-            for time in self.site.get_element_by_css(self.TIMES)
+            for time in self.site.get_element_by_css(self.selectors.TIMES)
         ]
 
     def entry(self) -> Iterator[LotteryEntry]:
@@ -108,4 +116,5 @@ class Fetcher(ModuleBase):
         )
 
     def mypage_amounts(self) -> list[int]:
-        return self.browser.get_elements_by_css(self.selectors.MYPAGE_AMOUNTS)
+        eles = self.browser.get_elements_by_css(self.selectors.MYPAGE_AMOUNTS)
+        return [int(e.text) for e in eles]

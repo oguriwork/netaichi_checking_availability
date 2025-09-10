@@ -1,4 +1,4 @@
-from anti_useragent import UserAgent
+from anti_useragent import UserAgent  # type: ignore
 
 OPTIONS = [
     # 画像を非表示にする。

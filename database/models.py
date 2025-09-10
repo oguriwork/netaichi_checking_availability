@@ -25,7 +25,7 @@ class T_LotteryEntryRecord(SQLModel, table=True):
     date: datetime
     start: int
     end: int
-    result: str = Field(default="未定")  # 初期値を設定
+    result: str = Field(default="未定")
     amount: int = Field(default=1)
     created_at: datetime = Field(default_factory=datetime.now, nullable=False)
     account_group: str

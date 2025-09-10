@@ -194,7 +194,7 @@ class ChromeBrowser:
 
     def get_element_by_css(
         self, css_selector: str, index: int = 0, base: WebElement | None = None
-    ) -> WebElement | None:
+    ) -> WebElement:
         return self.get_element(css_selector, By.CSS_SELECTOR, index, base)
 
     def get_elements_by_contains_text(
@@ -211,16 +211,18 @@ class ChromeBrowser:
 
     def get_element_by_contains_text(
         self, path: str, text: str, index: int = 0, base: WebElement | None = None
-    ) -> WebElement | None:
+    ) -> WebElement:
         elements = self.get_elements_by_contains_text(path, text, base)
         if not elements or index >= len(elements):
-            return None
+            raise RuntimeError(
+                f"Element not found for path: {path} with text: {text} and index: {index}"
+            )
 
         return elements[index]
 
     def get_element_by_xpath(
         self, xpath: str, index: int = 0, base: WebElement | None = None
-    ) -> WebElement | None:
+    ) -> WebElement:
         return self.get_element(xpath, By.XPATH, index, base)
 
     def get_elements_by_xpath(
@@ -292,5 +294,4 @@ class ChromeBrowser:
 
     @randam_sleep
     def get_html(self) -> BeautifulSoup:
-        return BeautifulSoup(self.driver.page_source, 'lxml')
-
+        return BeautifulSoup(self.driver.page_source, "lxml")

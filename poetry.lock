@@ -45,6 +45,28 @@ tests = ["cloudpickle", "hypothesis", "mypy (>=1.11.1)", "pympler", "pytest (>=4
 tests-mypy = ["mypy (>=1.11.1)", "pytest-mypy-plugins"]
 
 [[package]]
+name = "beautifulsoup4"
+version = "4.13.5"
+description = "Screen-scraping library"
+optional = false
+python-versions = ">=3.7.0"
+files = [
+    {file = "beautifulsoup4-4.13.5-py3-none-any.whl", hash = "sha256:642085eaa22233aceadff9c69651bc51e8bf3f874fb6d7104ece2beb24b47c4a"},
+    {file = "beautifulsoup4-4.13.5.tar.gz", hash = "sha256:5e70131382930e7c3de33450a2f54a63d5e4b19386eab43a5b34d594268f3695"},
+]
+
+[package.dependencies]
+soupsieve = ">1.2"
+typing-extensions = ">=4.0.0"
+
+[package.extras]
+cchardet = ["cchardet"]
+chardet = ["chardet"]
+charset-normalizer = ["charset-normalizer"]
+html5lib = ["html5lib"]
+lxml = ["lxml"]
+
+[[package]]
 name = "certifi"
 version = "2025.8.3"
 description = "Python package for providing Mozilla's CA Bundle."
@@ -528,6 +550,17 @@ files = [
 ]
 
 [[package]]
+name = "soupsieve"
+version = "2.8"
+description = "A modern CSS selector implementation for Beautiful Soup."
+optional = false
+python-versions = ">=3.9"
+files = [
+    {file = "soupsieve-2.8-py3-none-any.whl", hash = "sha256:0cc76456a30e20f5d7f2e14a98a4ae2ee4e5abdc7c5ea0aafe795f344bc7984c"},
+    {file = "soupsieve-2.8.tar.gz", hash = "sha256:e2dd4a40a628cb5f28f6d4b0db8800b8f581b65bb380b97de22ba5ca8d72572f"},
+]
+
+[[package]]
 name = "sqlalchemy"
 version = "2.0.43"
 description = "Database Abstraction Library"
@@ -673,6 +706,31 @@ trio = ">=0.11"
 wsproto = ">=0.14"
 
 [[package]]
+name = "types-beautifulsoup4"
+version = "4.12.0.20250516"
+description = "Typing stubs for beautifulsoup4"
+optional = false
+python-versions = ">=3.9"
+files = [
+    {file = "types_beautifulsoup4-4.12.0.20250516-py3-none-any.whl", hash = "sha256:5923399d4a1ba9cc8f0096fe334cc732e130269541d66261bb42ab039c0376ee"},
+    {file = "types_beautifulsoup4-4.12.0.20250516.tar.gz", hash = "sha256:aa19dd73b33b70d6296adf92da8ab8a0c945c507e6fb7d5db553415cc77b417e"},
+]
+
+[package.dependencies]
+types-html5lib = "*"
+
+[[package]]
+name = "types-html5lib"
+version = "1.1.11.20250809"
+description = "Typing stubs for html5lib"
+optional = false
+python-versions = ">=3.9"
+files = [
+    {file = "types_html5lib-1.1.11.20250809-py3-none-any.whl", hash = "sha256:e5f48ab670ae4cdeafd88bbc47113d8126dcf08318e0b8d70df26ecc13eca9b6"},
+    {file = "types_html5lib-1.1.11.20250809.tar.gz", hash = "sha256:7976ec7426bb009997dc5e072bca3ed988dd747d0cbfe093c7dfbd3d5ec8bf57"},
+]
+
+[[package]]
 name = "types-python-dateutil"
 version = "2.9.0.20250822"
 description = "Typing stubs for python-dateutil"
@@ -775,4 +833,4 @@ h11 = ">=0.9.0,<1"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "d427fbef3ac87e89034649fa9b834ca0732a2dcfcb92b0b72d57a47daa68978a"
+content-hash = "06ffda74a3742197846e970674de2ac7afbb6a4045178a18d45a38de03188557"

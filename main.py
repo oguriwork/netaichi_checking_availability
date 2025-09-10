@@ -17,7 +17,9 @@ def reserve():
 
 # 自分用
 def lottry():
-    account = I_Account(id=settings.ACCOUNT_ID, password=ACCOUNT_PASSWORD, name="me")
+    account = I_Account(
+        id=settings.ACCOUNT_ID, password=settings.ACCOUNT_PASSWORD, name="me"
+    )
     netaichi.login(account)
     add_lottery()
 

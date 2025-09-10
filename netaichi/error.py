@@ -48,7 +48,11 @@ class ErrorResult(Enum):
     @property
     def is_fatal(self) -> bool:
         """致命的なエラーかどうかを判定"""
-        return self in {ErrorResult.FAIL, ErrorResult.EXPIRED, ErrorResult.ACCOUNT_LOCKED}
+        return self in {
+            ErrorResult.FAIL,
+            ErrorResult.EXPIRED,
+            ErrorResult.ACCOUNT_LOCKED,
+        }
 
 
 class BrowserErrorController:
@@ -128,7 +132,9 @@ class BrowserErrorController:
             self.logger.warning("セッションエラー - 再ログインが必要")
             return ErrorResult.INVALID_SESSION
 
-        if any(pattern in error_message for pattern in ["一時的", "サーバー", "システム"]):
+        if any(
+            pattern in error_message for pattern in ["一時的", "サーバー", "システム"]
+        ):
             self.logger.warning("一時的なシステムエラー")
             return ErrorResult.RETRY
 
@@ -143,7 +149,9 @@ class BrowserErrorController:
             return ErrorResult.SUCCESS
 
         # 予約特有のエラーパターン
-        if any(pattern in error_message for pattern in ["満席", "予約不可", "空きなし"]):
+        if any(
+            pattern in error_message for pattern in ["満席", "予約不可", "空きなし"]
+        ):
             self.logger.warning("予約満席エラー")
             return ErrorResult.FAIL
 
@@ -208,7 +216,7 @@ class BrowserErrorController:
 
     def _handle_incorrect_credentials(self, account: M_Account) -> ErrorResult:
         """認証情報エラーの処理"""
-        self.logger.error(f"認証情報が正しくありません: {account.username}")
+        self.logger.error(f"認証情報が正しくありません: {account.name}")
         self.logger.error("アカウント情報を確認してください")
         return ErrorResult.FAIL
 
@@ -241,7 +249,7 @@ class BrowserErrorController:
 
     def _handle_account_locked(self, account: M_Account) -> ErrorResult:
         """アカウントロックエラーの処理"""
-        self.logger.error(f"アカウントがロックされています: {account.username}")
+        self.logger.error(f"アカウントがロックされています: {account.name}")
         return ErrorResult.ACCOUNT_LOCKED
 
     def _handle_captcha_required(self, account: M_Account) -> ErrorResult:
@@ -301,11 +309,18 @@ class BrowserErrorController:
             if not self.should_retry(result):
                 return False, result
 
-            self.logger.info(f"リトライ実行中... ({self.retry_count}/{self.max_retries})")
+            self.logger.info(
+                f"リトライ実行中... ({self.retry_count}/{self.max_retries})"
+            )
 
     def is_success_page(self) -> bool:
         """成功ページかどうかを判定"""
-        success_indicators = [self.SUCCESS_MESSAGE, ".alert-success", ".success", "#success-message"]
+        success_indicators = [
+            self.SUCCESS_MESSAGE,
+            ".alert-success",
+            ".success",
+            "#success-message",
+        ]
 
         for selector in success_indicators:
             element = self.site.browser.get_element_by_css(selector)

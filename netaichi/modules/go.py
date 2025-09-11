@@ -26,12 +26,21 @@ class Go(ModuleBase):
     selectors: Selector
     current_page = None
     BASE_URL = "https://www4.pref.aichi.jp/yoyaku/"
+<<<<<<< HEAD
+    
+    @update
+=======
 
+>>>>>>> caf4679860b0e598561114f5e8efcc38d5fabf72
     def top(self) -> PAGE_STATUS:
         self.site.go_page(self.site.BASE_URL)
         return PAGE_STATUS.TOP
+<<<<<<< HEAD
+
+=======
 
     # allow_anonymous
+>>>>>>> caf4679860b0e598561114f5e8efcc38d5fabf72
     @update
     def login(self) -> PAGE_STATUS:
         self.top()
@@ -43,7 +52,11 @@ class Go(ModuleBase):
         self.site.click(self.selectors.BTN_LOGOUT)
         self.logged_account = None
         return PAGE_STATUS.TOP
+<<<<<<< HEAD
+        
+=======
 
+>>>>>>> caf4679860b0e598561114f5e8efcc38d5fabf72
     @update
     def mypage(self) -> PAGE_STATUS:
         self.site.click(self.selectors.MYPAGE, 1)

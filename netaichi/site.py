@@ -55,6 +55,9 @@ class NetAichi:
 
     def all_entries(self) -> list[LotteryEntry]:
         return [e.core() for e in self.yield_lottery_entries()]
+<<<<<<< HEAD
+    
+=======
 
     def __get_amount(self) -> list[int]:
         self.go.mypage()
@@ -66,3 +69,38 @@ class NetAichi:
 
     def reserve_amount(self) -> int:
         return self.__get_amount()[0]
+>>>>>>> caf4679860b0e598561114f5e8efcc38d5fabf72
+
+    def submit_lottery_entries(self,entries:list[LotteryEntry],status,player:int)
+        # 現在ログインしているアカウントで登録
+        # 未完成
+        grouped = defaultdict(list)
+        for entry in entries:
+            grouped[entry.value].append(entry)
+        for value, group in sorted(grouped.items()):
+            self.site.navigator.go.lottery()
+            self.site.navigator.select.court(value)
+            for entry in group:
+                if entry.account_group != self.site.navigator.auth.logged_account.id:
+                    continue 
+                self.site.navigator.select.date(entry.date)
+                self.site.navigator.select.amount(entry.amount)
+                self.site.navigator.select.time_checkbox(entry.start,entry.end,)
+                # 申し込みボタンクリック
+                self.site.navigator.go.BTN_APPLY()
+                self.site.navigator.select.sports("tennis")
+                self.site.navigator.select.players(players)
+                # 確認ボタンクリック  
+                self.site.navigator.go.BTN_CHECK()
+                if self.is_entry_verified() is False:
+                    input(entry)
+                    raise RuntimeError("予定と違う")
+                # 確定ボタンクリック
+                self.site.navigator.go.BTN_CONFIRM()            
+                self.site.navigator.select.alert_switch(True)
+                # errorメッセージ確認
+
+    def is_entry_verified(self,entry:LotteryEntry) -> bool:
+        confirm_entry= self.site.fetcher.lottery.confirm_entry()
+        return confirm_entry == entry 
+    

@@ -19,6 +19,7 @@ class Auth(ModuleBase):
     def is_logged(self) -> bool:
         return self.logged_account is not None
 
+    # loginpage
     @update
     def login(self, account: I_Account) -> PAGE_STATUS:
         self.browser.send_form(self.selectors.LOGIN_ID, account.id)
@@ -29,7 +30,7 @@ class Auth(ModuleBase):
         res = self.site.error_controller.login(account)
         self.logged_account = account
         return PAGE_STATUS.LOGGED_IN
-
+    #any
     def logout(self):
         return self.site.logout()
 

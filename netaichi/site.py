@@ -55,9 +55,7 @@ class NetAichi:
 
     def all_entries(self) -> list[LotteryEntry]:
         return [e.core() for e in self.yield_lottery_entries()]
-<<<<<<< HEAD
     
-=======
 
     def __get_amount(self) -> list[int]:
         self.go.mypage()
@@ -69,7 +67,6 @@ class NetAichi:
 
     def reserve_amount(self) -> int:
         return self.__get_amount()[0]
->>>>>>> caf4679860b0e598561114f5e8efcc38d5fabf72
 
     def submit_lottery_entries(self,entries:list[LotteryEntry],status,player:int)
         # 現在ログインしているアカウントで登録

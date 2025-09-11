@@ -5,8 +5,8 @@ from .module_base import ModuleBase
 import pkgutil
 from importlib import import_module
 from . import modules
-from .error import BrowserErrorController
-from interfaces import I_Account
+#from .error import BrowserErrorController
+from database import M_Account
 from .modules import Auth, Go, Fetcher, PAGE_STATUS
 from interfaces import LotteryEntry, LotteryStatus
 from typing import Iterator
@@ -20,7 +20,7 @@ class NetAichi:
 
     def __init__(self, browser: ChromeBrowser):
         self.browser = browser
-        self.error_controller = BrowserErrorController(self)
+        #self.error_controller = BrowserErrorController(self)
 
         # modules/ 以下のモジュールを探索
         for _, module_name, _ in pkgutil.iter_modules(modules.__path__):
@@ -33,16 +33,16 @@ class NetAichi:
                 if issubclass(obj, ModuleBase) and obj is not ModuleBase:
                     setattr(self, name.lower(), obj(self))
 
-    def login(self, account: I_Account) -> None:
+    def login(self, account: M_Account) -> None:
         res = self.auth.ensure_login_account(account)
         if res is True:
-            self.go.mypage()
+            self.go.mypage() # type: ignore
         else:
             self.go.login()
             self.auth.login(account)
 
     def logout(self) -> PAGE_STATUS:
-        return self.auth.logout()
+        return self.go.logout()
 
     def get_status(self) -> LotteryStatus:
         self.go.lottery()

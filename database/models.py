@@ -6,7 +6,7 @@ from sqlmodel.pool import StaticPool
 
 class M_Account(SQLModel, table=True):
     name: str
-    id: str | None = Field(default=None, primary_key=True)
+    id: str = Field(primary_key=True)
     password: str
     expiration_date: datetime | None = None
     created_at: datetime = Field(default_factory=datetime.now, nullable=False)

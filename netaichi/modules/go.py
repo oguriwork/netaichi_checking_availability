@@ -1,9 +1,10 @@
 from __future__ import annotations
+
 from collections.abc import Generator
-from ..module_base import ModuleBase
-from ._page_status import PAGE_STATUS, update
 from dataclasses import dataclass
 
+from ..module_base import ModuleBase
+from ._page_status import PAGE_STATUS, update
 
 @dataclass(frozen=True)
 class Selector:
@@ -27,77 +28,77 @@ class Go(ModuleBase):
     current_page = None
     BASE_URL = "https://www4.pref.aichi.jp/yoyaku/"
 
+    @update()
     def top(self) -> PAGE_STATUS:
-        self.site.go_page(self.site.BASE_URL)
+        self.browser.go_page(self.BASE_URL)
         return PAGE_STATUS.TOP
 
-    # allow_anonymous
-    @update
+    @update(via_page=PAGE_STATUS.TOP)
     def login(self) -> PAGE_STATUS:
-        self.top()
-        self.site.click(self.selectors.LOGIN)
+        self.browser.click(self.selectors.LOGIN)
         return PAGE_STATUS.LOGIN
 
-    @update
+    @update()
     def logout(self) -> PAGE_STATUS:
-        self.site.click(self.selectors.BTN_LOGOUT)
+        self.browser.click(self.selectors.BTN_LOGOUT)
         self.logged_account = None
         return PAGE_STATUS.TOP
 
-    @update
+    @update()
     def mypage(self) -> PAGE_STATUS:
-        self.site.click(self.selectors.MYPAGE, 1)
+        self.browser.click(self.selectors.MYPAGE, 1)
         return PAGE_STATUS.MYPAGE
 
-    @update(via_mypage=True)
+    @update(via_page=PAGE_STATUS.MYPAGE)
     def lottery(self) -> PAGE_STATUS:
-        self.site.click(self.selectors.LOTTERY)
+        self.browser.click(self.selectors.LOTTERY)
         return PAGE_STATUS.LOTTERY
 
-    @update(via_mypage=True)
+    @update(via_page=PAGE_STATUS.MYPAGE)
     def reservation(self) -> PAGE_STATUS:
-        self.site.click(self.selectors.RESERVATION)
+        self.browser.click(self.selectors.RESERVATION)
         return PAGE_STATUS.RESERVATION
 
-    @update(PAGE_STATUS.RESERVATION_LIST, via_mypage=True)
+    @update(expected_status=PAGE_STATUS.RESERVATION_LIST, via_page=PAGE_STATUS.MYPAGE)
     def reservation_list(self) -> Generator[int]:
-        self.site.click(self.selectors.LIST, 0)
+        self.browser.click(self.selectors.LIST, 0)
         return self.loop_list()
 
-    @update(PAGE_STATUS.LOTTERY_LIST, via_mypage=True)
+    @update(expected_status=PAGE_STATUS.LOTTERY_LIST, via_page=PAGE_STATUS.MYPAGE)
     def lottery_list(self) -> Generator[int]:
-        self.site.click(self.selectors.LIST, 1)
+        self.browser.click(self.selectors.LIST, 1)
         return self.loop_list()
 
     def loop_list(self) -> Generator[int]:
         page_index = 1
         yield page_index
-        while self.site.get_html().select(self.selectors.LIST_NEXT) != []:
+        while self.browser.get_html().select(self.selectors.LIST_NEXT) != []:
             page_index += 1
-            self.site.js_exec(f"movePage({page_index});")
+            self.browser.js_exec(f"movePage({page_index});")
             yield page_index
 
-    # return 適当
+    # requere_status をつけるべき？
     def btn_apply(self) -> PAGE_STATUS:
         """申し込みボタンをクリック"""
-        self.site.click(self.selectors.BTN_APPLY)
+        self.browser.click(self.selectors.BTN_APPLY)
         return PAGE_STATUS.RESERVATION
 
     def btn_check(self) -> PAGE_STATUS:
         """確認ボタンをクリック"""
-        self.site.click(self.selectors.BTN_CHECK)
+        self.browser.click(self.selectors.BTN_CHECK)
         return PAGE_STATUS.RESERVATION
 
     def btn_confirm(self) -> PAGE_STATUS:
         """確定ボタンをクリック"""
-        self.site.click(self.selectors.BTN_CONFIRM)
+        self.browser.click(self.selectors.BTN_CONFIRM)
         return PAGE_STATUS.RESERVATION
 
     def btn_back(self) -> PAGE_STATUS:
         """戻るボタンをクリック"""
-        self.site.click(self.selectors.BTN_BACK)
+        self.browser.click(self.selectors.BTN_BACK)
         return PAGE_STATUS.RESERVATION_LIST
 
-    def notlogin_reserve(self):
-        self.top()
-        self.site.click(self.selectors.BTN_NOTLOGIN_RESERVE)
+    @update(via_page=PAGE_STATUS.TOP)
+    def notlogin_reserve(self) -> PAGE_STATUS:
+        self.browser.click(self.selectors.BTN_NOTLOGIN_RESERVE)
+        return PAGE_STATUS.RESERVATION

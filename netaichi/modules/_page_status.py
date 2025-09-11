@@ -19,12 +19,9 @@ class PAGE_STATUS(Enum):
         return self.name.lower()
 
 
-def update(func=None, *, via_mypage=True):
+def update(expected_status:PAGE_STATUS | None =None,*, via_page:PAGE_STATUS|None=None):
     def decorator(func):
-        @wraps(func)
         def wrapper(self, *args, **kwargs):
-            # 期待される戻り値を型ヒントから取得
-            expected_status = func.__annotations__.get("return")
 
             # すでに目的のページにいるならスキップ
             if expected_status and self.current_page == expected_status:
@@ -33,9 +30,11 @@ def update(func=None, *, via_mypage=True):
                 )
                 return self.current_page
 
-            # MYPAGE を経由する必要がある場合のみ
-            if via_mypage and self.current_page != PAGE_STATUS.MYPAGE:
+            # 経由する必要がある場合のみ
+            if via_page == PAGE_STATUS.MYPAGE !=self.current_page:
                 self.mypage()
+            if via_page == PAGE_STATUS.TOP !=self.current_page:
+                self.top()
 
             old_url = self.browser.current_url
             result = func(self, *args, **kwargs)
@@ -48,16 +47,11 @@ def update(func=None, *, via_mypage=True):
                         f"{old_url} -> {self.browser.current_url}"
                     )
                 self.current_page = result
-
             return result or self.current_page
 
         return wrapper
+    return decorator
 
-    # 引数なしで使えるように調整
-    if func is None:
-        return decorator
-    else:
-        return decorator(func)
 
 
 def require_status(*allowed_statuses: PAGE_STATUS):

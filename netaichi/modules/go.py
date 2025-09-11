@@ -32,6 +32,9 @@ class Go(ModuleBase):
     def top(self) -> PAGE_STATUS:
         self.browser.go_page(self.BASE_URL)
         return PAGE_STATUS.TOP
+<<<<<<< HEAD
+
+=======
 
     @update(via_page=PAGE_STATUS.TOP)
     def login(self) -> PAGE_STATUS:

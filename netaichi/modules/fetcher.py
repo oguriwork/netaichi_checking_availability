@@ -27,12 +27,21 @@ class Selector:
 class Fetcher(ModuleBase):
     selectors: Selector
     entries_list: list[LotteryEntry] = []
+<<<<<<< HEAD
+    
+    # lotterypage
+=======
 
+>>>>>>> caf4679860b0e598561114f5e8efcc38d5fabf72
     def lottery_status(self) -> LotteryStatus:
+<<<<<<< HEAD
+        summary_alltime = self.browser.get_element_by_css(self.selectors.STATUS_ALL).text
+=======
         # 今取得できるページにいるとして
         summary_alltime = self.browser.get_element_by_css(
             self.selectors.STATUS_ALL
         ).text
+>>>>>>> caf4679860b0e598561114f5e8efcc38d5fabf72
         summary_zone = self.browser.get_element_by_css(self.selectors.STATUS_ZONE).text
         summary_count = self.browser.get_element_by_css(
             self.selectors.STATUS_COUNT
@@ -59,20 +68,33 @@ class Fetcher(ModuleBase):
             count=int(summary_count),
         )
         return LotteryStatus(court_infos=court_infos, summary=summary)
+<<<<<<< HEAD
+    # 日付選択のところ
+=======
 
+>>>>>>> caf4679860b0e598561114f5e8efcc38d5fabf72
     def times(self) -> list[int]:
+<<<<<<< HEAD
+        return [int(normalize("NFKC", time.text[:-2])) for time in self.site.get_element_by_css(self.TIMES)]
+    # lottery_list
+=======
         return [
             int(normalize("NFKC", time.text[:-2]))
             for time in self.site.get_element_by_css(self.selectors.TIMES)
         ]
 
+>>>>>>> caf4679860b0e598561114f5e8efcc38d5fabf72
     def entry(self) -> Iterator[LotteryEntry]:
         rows = self.site.get_elements("table.tablebg2 tbody tr")
         for idx, row in enumerate(rows):
             if idx in {0, 1, 7}:
                 continue  # ヘッダーとフッターをスキップ
             yield self._parse_row(row)
+<<<<<<< HEAD
+    # lottery_list
+=======
 
+>>>>>>> caf4679860b0e598561114f5e8efcc38d5fabf72
     def _parse_row(self, row: WebElement) -> LotteryEntry:
         link = self.site.get_element_by_css("内容確認", By.LINK_TEXT, base=row)
         date_text = self.site.get_element_by_css(
@@ -115,6 +137,19 @@ class Fetcher(ModuleBase):
             row=row,
         )
 
+<<<<<<< HEAD
+    
+    def __amounts(self) -> list[int]:
+        return self.browser.get_elements_by_css(self.selectors.MYPAGE_AMOUNTS)
+    # mypage
+    def lottery_amount(self) -> int:
+        return self.__amounts()[1]
+    # mypage
+    def reserve_amount(self) -> int:
+        return self.__amounts()[0]
+=======
     def mypage_amounts(self) -> list[int]:
         eles = self.browser.get_elements_by_css(self.selectors.MYPAGE_AMOUNTS)
         return [int(e.text) for e in eles]
+
+>>>>>>> caf4679860b0e598561114f5e8efcc38d5fabf72

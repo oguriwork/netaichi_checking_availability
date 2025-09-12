@@ -27,21 +27,10 @@ class Selector:
 class Fetcher(ModuleBase):
     selectors: Selector
     entries_list: list[LotteryEntry] = []
-<<<<<<< HEAD
     
     # lotterypage
-=======
-
->>>>>>> caf4679860b0e598561114f5e8efcc38d5fabf72
     def lottery_status(self) -> LotteryStatus:
-<<<<<<< HEAD
         summary_alltime = self.browser.get_element_by_css(self.selectors.STATUS_ALL).text
-=======
-        # 今取得できるページにいるとして
-        summary_alltime = self.browser.get_element_by_css(
-            self.selectors.STATUS_ALL
-        ).text
->>>>>>> caf4679860b0e598561114f5e8efcc38d5fabf72
         summary_zone = self.browser.get_element_by_css(self.selectors.STATUS_ZONE).text
         summary_count = self.browser.get_element_by_css(
             self.selectors.STATUS_COUNT

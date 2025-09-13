@@ -6,6 +6,7 @@ from dataclasses import dataclass
 from ..module_base import ModuleBase
 from ._page_status import PAGE_STATUS, update
 
+
 @dataclass(frozen=True)
 class Selector:
     LOGIN = "#login"
@@ -32,7 +33,6 @@ class Go(ModuleBase):
     def top(self) -> PAGE_STATUS:
         self.browser.go_page(self.BASE_URL)
         return PAGE_STATUS.TOP
-
 
     @update(via_page=PAGE_STATUS.TOP)
     def login(self) -> PAGE_STATUS:

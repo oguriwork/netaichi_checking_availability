@@ -1,13 +1,16 @@
-from unicodedata import normalize
-from ..module_base import ModuleBase
+import re
 from dataclasses import dataclass
-from interfaces import LotteryEntry, LotteryStatus, CourtInfo, SummaryInfo
+from datetime import datetime as dd
 from typing import Iterator
+from unicodedata import normalize
+
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
+
+from interfaces import CourtInfo, LotteryEntry, LotteryStatus, SummaryInfo
 from utils import to_datetime
-import re
-from datetime import datetime as dd
+
+from ..module_base import ModuleBase
 
 
 @dataclass(frozen=True)

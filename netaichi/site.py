@@ -82,31 +82,29 @@ class NetAichi:
         for entry in entries:
             grouped[entry.value].append(entry)
         for value, group in sorted(grouped.items()):
-            self.site.go.lottery()
-            self.site.select.court(value)
+            self.go.lottery()
+            self.select.court(value)
             for entry in group:
-                if entry.account_group != self.site.auth.logged_account.id:
-                    continue
-                self.site.select.date(entry.date)
-                self.site.select.amount(entry.amount)
-                self.site.select.time_checkbox(
-                    entry.start,
-                    entry.end,
-                )
+                if entry.account_group != self.auth.logged_account.id:
+                    continue 
+                self.select.date(entry.date)
+                self.select.amount(entry.amount)
+                self.select.time_checkbox(entry.start,entry.end,)
                 # 申し込みボタンクリック
-                self.site.go.BTN_APPLY()
-                self.site.select.sports("tennis")
-                self.site.select.players(players)
-                # 確認ボタンクリック
-                self.site.go.BTN_CHECK()
+                self.go.BTN_APPLY()
+                self.select.sports("tennis")
+                self.select.players(players)
+                # 確認ボタンクリック  
+                self.go.BTN_CHECK()
                 if self.is_entry_verified() is False:
                     input(entry)
                     raise RuntimeError("予定と違う")
                 # 確定ボタンクリック
-                self.site.go.BTN_CONFIRM()
-                self.site.select.alert_switch(True)
+                self.go.BTN_CONFIRM()            
+                self.select.alert_switch(True)
                 # errorメッセージ確認
 
-    def is_entry_verified(self, entry: LotteryEntry) -> bool:
-        confirm_entry = self.fetcher.lottery.confirm_entry()
-        return confirm_entry == entry
+    def is_entry_verified(self,entry:LotteryEntry) -> bool:
+        confirm_entry= self.fetcher.lottery.confirm_entry()
+        return confirm_entry == entry 
+    

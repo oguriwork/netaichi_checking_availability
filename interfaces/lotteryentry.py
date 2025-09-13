@@ -6,6 +6,7 @@ from datetime import datetime
 from selenium.webdriver.remote.webelement import WebElement
 
 from database import T_LotteryEntryRecord
+from typing import Optional
 
 
 @dataclass
@@ -15,9 +16,9 @@ class LotteryEntry:
     end: int
     value: str
     amount: int
-    link: WebElement | None
-    row: WebElement | None
-    account_group: str | None = None
+    link: Optional[WebElement]
+    row: Optional[WebElement]
+    account_group: Optional[str] = None
 
     def __post_init__(self):
         if self.start > self.end:

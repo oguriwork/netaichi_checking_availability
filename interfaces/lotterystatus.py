@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Optional
 
 
 @dataclass
@@ -48,10 +49,10 @@ class LotteryStatus:
         self.court_infos = court_infos
         self.summary = summary
 
-    def get_by_name(self, name: str) -> CourtInfo | None:
+    def get_by_name(self, name: str) -> Optional[CourtInfo]:
         return next((ci for ci in self.court_infos if ci.name == name), None)
 
-    def get_by_value(self, value: str | int) -> CourtInfo | None:
+    def get_by_value(self, value: str | int) -> Optional[CourtInfo]:
         return next(
             (ci for ci in self.court_infos if str(ci.value) == str(value)), None
         )

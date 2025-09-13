@@ -1,15 +1,21 @@
 from __future__ import annotations
-from browser import ChromeBrowser
+
 import inspect
-from .module_base import ModuleBase
 import pkgutil
 from importlib import import_module
-from . import modules
-#from .error import BrowserErrorController
-from database import M_Account
-from .modules import Auth, Go, Fetcher, PAGE_STATUS
-from interfaces import LotteryEntry, LotteryStatus
 from typing import Iterator
+
+from courts import CourtManager
+
+from browser import ChromeBrowser
+
+# from .error import BrowserErrorController
+from database import M_Account
+from interfaces import LotteryEntry, LotteryStatus
+
+from . import modules
+from .module_base import ModuleBase
+from .modules import PAGE_STATUS, Auth, Fetcher, Go,
 
 
 class NetAichi:
@@ -17,10 +23,12 @@ class NetAichi:
     go: Go
     fetcher: Fetcher
     browser: ChromeBrowser
+    error: 
+    LOTTERY_MONTH = 3
 
     def __init__(self, browser: ChromeBrowser):
         self.browser = browser
-        #self.error_controller = BrowserErrorController(self)
+        self.courts = CourtManager(self.LOTTERY_MONTH)
 
         # modules/ 以下のモジュールを探索
         for _, module_name, _ in pkgutil.iter_modules(modules.__path__):
@@ -36,7 +44,7 @@ class NetAichi:
     def login(self, account: M_Account) -> None:
         res = self.auth.ensure_login_account(account)
         if res is True:
-            self.go.mypage() # type: ignore
+            self.go.mypage()  # type: ignore
         else:
             self.go.login()
             self.auth.login(account)
@@ -50,17 +58,16 @@ class NetAichi:
 
     def yield_lottery_entries(self) -> Iterator[LotteryEntry]:
         for _ in self.go.lottery_list():
-            for entry in self.fetcher.lottery_entry():
+            for entry in self.fetcher.entry():
                 yield entry
 
     def all_entries(self) -> list[LotteryEntry]:
         return [e.core() for e in self.yield_lottery_entries()]
-    
 
     def __get_amount(self) -> list[int]:
         self.go.mypage()
         elements = self.fetcher.mypage_amounts()
-        return elements
+        return [int(e.text) for e in elements]
 
     def lottery_amount(self) -> int:
         return self.__get_amount()[1]
@@ -68,36 +75,38 @@ class NetAichi:
     def reserve_amount(self) -> int:
         return self.__get_amount()[0]
 
-    def submit_lottery_entries(self,entries:list[LotteryEntry],status,player:int)
+    def submit_lottery_entries(self, entries: list[LotteryEntry], status, player: int):
         # 現在ログインしているアカウントで登録
         # 未完成
         grouped = defaultdict(list)
         for entry in entries:
             grouped[entry.value].append(entry)
         for value, group in sorted(grouped.items()):
-            self.site.navigator.go.lottery()
-            self.site.navigator.select.court(value)
+            self.site.go.lottery()
+            self.site.select.court(value)
             for entry in group:
-                if entry.account_group != self.site.navigator.auth.logged_account.id:
-                    continue 
-                self.site.navigator.select.date(entry.date)
-                self.site.navigator.select.amount(entry.amount)
-                self.site.navigator.select.time_checkbox(entry.start,entry.end,)
+                if entry.account_group != self.site.auth.logged_account.id:
+                    continue
+                self.site.select.date(entry.date)
+                self.site.select.amount(entry.amount)
+                self.site.select.time_checkbox(
+                    entry.start,
+                    entry.end,
+                )
                 # 申し込みボタンクリック
-                self.site.navigator.go.BTN_APPLY()
-                self.site.navigator.select.sports("tennis")
-                self.site.navigator.select.players(players)
-                # 確認ボタンクリック  
-                self.site.navigator.go.BTN_CHECK()
+                self.site.go.BTN_APPLY()
+                self.site.select.sports("tennis")
+                self.site.select.players(players)
+                # 確認ボタンクリック
+                self.site.go.BTN_CHECK()
                 if self.is_entry_verified() is False:
                     input(entry)
                     raise RuntimeError("予定と違う")
                 # 確定ボタンクリック
-                self.site.navigator.go.BTN_CONFIRM()            
-                self.site.navigator.select.alert_switch(True)
+                self.site.go.BTN_CONFIRM()
+                self.site.select.alert_switch(True)
                 # errorメッセージ確認
 
-    def is_entry_verified(self,entry:LotteryEntry) -> bool:
-        confirm_entry= self.site.fetcher.lottery.confirm_entry()
-        return confirm_entry == entry 
-    
+    def is_entry_verified(self, entry: LotteryEntry) -> bool:
+        confirm_entry = self.fetcher.lottery.confirm_entry()
+        return confirm_entry == entry

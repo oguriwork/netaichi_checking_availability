@@ -5,7 +5,7 @@ OPTIONS = [
     # "--blink-settings=imagesEnabled=false",
     # 拡張機能の更新、セーフブラウジングサービス、アップグレード検出、翻訳、UMAを含む様々なバックグラウンドネットワークサービスを無効にする。
     "--disable-background-networking",
-    # navigator.webdriver=false となる設定。確認⇒driver.execute_script("return navigator.webdriver
+    # webdriver=false となる設定。確認⇒driver.execute_script("return webdriver
     "--disable-blink-features=AutomationControlled",
     # デフォルトアプリのインストールを無効にする。
     "--disable-default-apps",

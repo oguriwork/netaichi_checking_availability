@@ -1,7 +1,7 @@
 from __future__ import annotations
 from datetime import date
 from dateutil.relativedelta import relativedelta  # type: ignore
-
+from typing import Optional
 from .base import CourtBase
 
 
@@ -46,7 +46,7 @@ class CourtManager:
         except KeyError:
             raise AttributeError(f"'CourtManager' object has no attribute '{key}'")  # noqa: B904
 
-    def get(self, name_or_value: str) -> CourtBase | None:
+    def get(self, name_or_value: str) -> Optional[CourtBase]:
         """コートを取得（見つからない場合はNone）"""
         return self.registry.get(name_or_value)
 

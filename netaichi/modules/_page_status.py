@@ -1,5 +1,6 @@
 from enum import Enum, auto
 from functools import wraps
+from typing import Optional
 
 
 class PAGE_STATUS(Enum):
@@ -19,10 +20,13 @@ class PAGE_STATUS(Enum):
         return self.name.lower()
 
 
-def update(expected_status:PAGE_STATUS | None =None,*, via_page:PAGE_STATUS|None=None):
+def update(
+    expected_status: Optional[PAGE_STATUS] = None,
+    *,
+    via_page: Optional[PAGE_STATUS] = None,
+):
     def decorator(func):
         def wrapper(self, *args, **kwargs):
-
             # すでに目的のページにいるならスキップ
             if expected_status and self.current_page == expected_status:
                 self.browser.logger.debug(
@@ -31,9 +35,9 @@ def update(expected_status:PAGE_STATUS | None =None,*, via_page:PAGE_STATUS|None
                 return self.current_page
 
             # 経由する必要がある場合のみ
-            if via_page == PAGE_STATUS.MYPAGE !=self.current_page:
+            if via_page == PAGE_STATUS.MYPAGE != self.current_page:
                 self.mypage()
-            if via_page == PAGE_STATUS.TOP !=self.current_page:
+            if via_page == PAGE_STATUS.TOP != self.current_page:
                 self.top()
 
             old_url = self.browser.current_url
@@ -50,8 +54,8 @@ def update(expected_status:PAGE_STATUS | None =None,*, via_page:PAGE_STATUS|None
             return result or self.current_page
 
         return wrapper
-    return decorator
 
+    return decorator
 
 
 def require_status(*allowed_statuses: PAGE_STATUS):

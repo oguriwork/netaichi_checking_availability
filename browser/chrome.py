@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Optional
+
 from bs4 import BeautifulSoup
-from browser.constants import ScrollPosition
 from selenium import webdriver
 from selenium.webdriver import Chrome as WebDriver
 from selenium.webdriver.common.action_chains import ActionChains
@@ -13,6 +13,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.select import Select
 from selenium.webdriver.support.ui import WebDriverWait
 
+from browser.constants import ScrollPosition
 from utils import AppLogger
 
 from .decorator import randam_sleep
@@ -38,7 +39,10 @@ class ChromeBrowser:
         return self
 
     def __exit__(
-        self, ex_type: type | None, ex_value: Exception | None, trace: Any | None
+        self,
+        ex_type: Optional[type],
+        ex_value: Optional[Exception],
+        trace: Optional[Any],
     ) -> None:
         self.quit()
 
@@ -158,7 +162,10 @@ class ChromeBrowser:
         self.logger.info(f"Scrolled element into view: {selector}")
 
     def get_elements(
-        self, selector: str, by: str = By.CSS_SELECTOR, base: WebElement | None = None
+        self,
+        selector: str,
+        by: str = By.CSS_SELECTOR,
+        base: Optional[WebElement] = None,
     ) -> list[WebElement]:
         if not selector or not isinstance(selector, str):
             raise ValueError("Selector must be a non-empty string")
@@ -174,7 +181,7 @@ class ChromeBrowser:
         return elements
 
     def get_element(
-        self, selector: str, by: str, index: int = 0, base: WebElement | None = None
+        self, selector: str, by: str, index: int = 0, base: Optional[WebElement] = None
     ) -> WebElement:
         if index < 0:
             raise ValueError("Index must be non-negative")
@@ -188,17 +195,17 @@ class ChromeBrowser:
         return elements[index]
 
     def get_elements_by_css(
-        self, css_selector: str, base: WebElement | None = None
+        self, css_selector: str, base: Optional[WebElement] = None
     ) -> list[WebElement]:
         return self.get_elements(css_selector, By.CSS_SELECTOR, base)
 
     def get_element_by_css(
-        self, css_selector: str, index: int = 0, base: WebElement | None = None
+        self, css_selector: str, index: int = 0, base: Optional[WebElement] = None
     ) -> WebElement:
         return self.get_element(css_selector, By.CSS_SELECTOR, index, base)
 
     def get_elements_by_contains_text(
-        self, path: str, text: str, base: WebElement | None = None
+        self, path: str, text: str, base: Optional[WebElement] = None
     ) -> list[WebElement]:
         if not path or not isinstance(path, str):
             raise ValueError("Path must be a non-empty string")
@@ -210,7 +217,7 @@ class ChromeBrowser:
         return self.get_elements(xpath, By.XPATH, base)
 
     def get_element_by_contains_text(
-        self, path: str, text: str, index: int = 0, base: WebElement | None = None
+        self, path: str, text: str, index: int = 0, base: Optional[WebElement] = None
     ) -> WebElement:
         elements = self.get_elements_by_contains_text(path, text, base)
         if not elements or index >= len(elements):
@@ -221,12 +228,12 @@ class ChromeBrowser:
         return elements[index]
 
     def get_element_by_xpath(
-        self, xpath: str, index: int = 0, base: WebElement | None = None
+        self, xpath: str, index: int = 0, base: Optional[WebElement] = None
     ) -> WebElement:
         return self.get_element(xpath, By.XPATH, index, base)
 
     def get_elements_by_xpath(
-        self, xpath: str, base: WebElement | None = None
+        self, xpath: str, base: Optional[WebElement] = None
     ) -> list[WebElement]:
         return self.get_elements(xpath, By.XPATH, base)
 

@@ -1,17 +1,16 @@
 from __future__ import annotations
 
+import time
 from enum import Enum, auto
 from typing import TYPE_CHECKING, Optional
-import logging
-import time
+
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
+
 from database import M_Account
 
 if TYPE_CHECKING:
-    from .core import Netaichi
-from core.utils import Applogger
-
-from .message import SystemMessage
+    from .site import NetAichi
+from utils import AppLogger
 
 
 class ErrorResult(Enum):
@@ -55,10 +54,9 @@ class ErrorResult(Enum):
         }
 
 
-class BrowserErrorController:
-    logger = Applogger("ErrorHandler")
+class Error:
+    logger = AppLogger("ErrorHandler")
     """エラーハンドリングを行うクラス"""
-
     # セレクタ定義
     LOGIN_ERROR_MESSAGE = "#allMessages2"
     GENERAL_ERROR_MESSAGE = ".error-message"
@@ -76,11 +74,11 @@ class BrowserErrorController:
         "captcha": ["画像認証", "文字認証", "認証コード"],
     }
 
-    def __init__(self, site: Netaichi):
+    def __init__(self, site: NetAichi):
         self.site = site
         self.retry_count = 0
         self.max_retries = 3
-        self.retry_delay = 2  # 秒
+        self.retry_delay = 2
 
     def login(self, account: M_Account) -> ErrorResult:
         """ログインエラーのハンドリング"""
@@ -169,21 +167,11 @@ class BrowserErrorController:
 
         return self._handle_unknown_error(error_message)
 
-    def _get_error_message(self, selector: Optional[str] = None) -> Optional[str]:
+    def _get_error_message(self, selector: str) -> Optional[str]:
         """エラーメッセージを取得"""
-        selectors = [
-            selector or self.LOGIN_ERROR_MESSAGE,
-            self.GENERAL_ERROR_MESSAGE,
-            ".alert-danger",
-            ".error",
-            "#error-message",
-        ]
-
-        for sel in selectors:
-            element = self.site.browser.get_element_by_css(sel)
-            if element and element.text.strip():
-                return element.text.strip()
-
+        element = self.site.browser.get_element_by_css(selector)
+        if element and element.text.strip():
+            return element.text.strip()
         return None
 
     def _classify_error(self, error_message: str) -> str:
@@ -201,13 +189,13 @@ class BrowserErrorController:
         self.logger.warning("ボット検出エラー - ReCAPTCHA処理が必要")
 
         # ログインフォームを再送信
-        self.site.navigator.auth.send_login_form(account)
+        self.site.auth.send_login_form(account)
 
         # ユーザーにReCAPTCHA処理を要求
         input("ReCAPTCHA を解決してマイページに移動したら Enter を押してください...")
 
         # マイページに移動できたかチェック
-        if self.site.navigator.is_logged_in():
+        if self.site.is_logged_in():
             self.logger.info("ReCAPTCHA処理完了")
             return ErrorResult.SUCCESS
         else:
@@ -225,11 +213,11 @@ class BrowserErrorController:
         self.logger.warning("セッションが期限切れです - 再ログインを試行")
 
         # トップページに戻る
-        self.site.navigator.go_to_top()
+        self.site.go_to_top()
         time.sleep(1)
 
         # 再ログイン
-        if self.site.navigator.auth.login(account):
+        if self.site.auth.login(account):
             self.logger.info("再ログイン成功")
             return ErrorResult.SUCCESS
         else:

@@ -2,20 +2,21 @@ from datetime import datetime
 from sqlalchemy.engine import Engine
 from sqlmodel import Field, Session, SQLModel, create_engine
 from sqlmodel.pool import StaticPool
+from typing import Optional
 
 
 class M_Account(SQLModel, table=True):
     name: str
     id: str = Field(primary_key=True)
     password: str
-    expiration_date: datetime | None = None
+    expiration_date: Optional[datetime] = None
     created_at: datetime = Field(default_factory=datetime.now, nullable=False)
     updated_at: datetime = Field(
         default_factory=datetime.now,
         nullable=False,
         sa_column_kwargs={"onupdate": datetime.now},
     )
-    account_group: str | None = None
+    account_group: Optional[str] = None
     is_master: bool = Field(default=False)
     is_use: bool = Field(default=True)
 
@@ -29,7 +30,7 @@ class T_LotteryEntryRecord(SQLModel, table=True):
     amount: int = Field(default=1)
     created_at: datetime = Field(default_factory=datetime.now, nullable=False)
     account_group: str
-    id: int | None = Field(default=None, primary_key=True)  # 主キー制約
+    id: Optional[int] = Field(default=None, primary_key=True)  # 主キー制約
 
 
 class SessionFactory:

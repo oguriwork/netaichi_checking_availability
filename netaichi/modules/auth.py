@@ -5,6 +5,7 @@ from database import M_Account
 
 from ..module_base import ModuleBase
 from ._page_status import PAGE_STATUS, update
+from ..error_handler import ErrorResult
 
 
 @dataclass(frozen=True)
@@ -23,15 +24,34 @@ class Auth(ModuleBase):
         return self.logged_account is not None
 
     @update()
-    def login(self, account: M_Account) -> PAGE_STATUS:
+    def login(self, account: M_Account) -> bool:
         self.browser.send_form(self.selectors.LOGIN_ID, account.id)
         self.browser.send_form(self.selectors.LOGIN_PW, account.password)
         self.browser.click(self.selectors.BTN_LOGIN)
         self.browser.driver.implicitly_wait(3)
         # エラーメッセージで分岐したい
-        res = self.site.error.login(account)
+        res = self.error_handler.login()
+        match res:
+            case ErrorResult.SUCCESS:
+                self.logger.info(f"ログイン成功: {account.name}")
+            case ErrorResult.RECAPTCHA:
+                self.logger.warning(f"ログイン成功(要ReCAPTCHA処理): {account.name}")
+                self.browser.send_form(self.selectors.LOGIN_ID, account.id)
+                self.browser.send_form(self.selectors.LOGIN_PW, account.password)
+                input("続行するにはEnterキーを押してください...")
+            case ErrorResult.INVALID_CREDENTIALS:
+                self.logger.error(
+                    f"IDかパスワードが間違っています: ID {account.id}  PW {account.password}"
+                )
+                return False
+            case ErrorResult.EXPIRED:
+                self.logger.error(f"アカウントの有効期限が切れています: {account.id}")
+                return False
+            case ErrorResult.UNKNOWN:
+                self.logger.error(f"不明なエラー: {account.name}")
+                return False
         self.logged_account = account
-        return PAGE_STATUS.MYPAGE
+        return True
 
     @update()
     def logout(self) -> PAGE_STATUS:

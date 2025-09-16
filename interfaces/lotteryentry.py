@@ -23,7 +23,7 @@ class LotteryEntry:
     def __post_init__(self):
         if self.start > self.end:
             raise ValueError("開始時間は終了時間より前である必要があります")
-        if self.amount >= 1:
+        if 1 > self.amount:
             raise ValueError("コート面数は1以上である必要があります")
         if not self.value.strip():
             raise ValueError("コートValueは空にできません")

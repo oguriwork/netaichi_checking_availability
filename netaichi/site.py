@@ -5,7 +5,7 @@ import pkgutil
 from importlib import import_module
 from typing import Iterator
 
-from courts import CourtManager
+from .courts import CourtManager
 
 from browser import ChromeBrowser
 
@@ -15,7 +15,8 @@ from interfaces import LotteryEntry, LotteryStatus
 
 from . import modules
 from .module_base import ModuleBase
-from .modules import PAGE_STATUS, Auth, Fetcher, Go,
+from .modules import PAGE_STATUS, Auth, Fetcher, Go
+from .error_handler import ErrorHandler
 
 
 class NetAichi:
@@ -23,12 +24,14 @@ class NetAichi:
     go: Go
     fetcher: Fetcher
     browser: ChromeBrowser
-    error: 
+    select: ModuleBase
+    error_handler: ErrorHandler
     LOTTERY_MONTH = 3
 
     def __init__(self, browser: ChromeBrowser):
         self.browser = browser
         self.courts = CourtManager(self.LOTTERY_MONTH)
+        self.error_handler = ErrorHandler(self)
 
         # modules/ 以下のモジュールを探索
         for _, module_name, _ in pkgutil.iter_modules(modules.__path__):
@@ -86,25 +89,27 @@ class NetAichi:
             self.select.court(value)
             for entry in group:
                 if entry.account_group != self.auth.logged_account.id:
-                    continue 
+                    continue
                 self.select.date(entry.date)
                 self.select.amount(entry.amount)
-                self.select.time_checkbox(entry.start,entry.end,)
+                self.select.time_checkbox(
+                    entry.start,
+                    entry.end,
+                )
                 # 申し込みボタンクリック
                 self.go.BTN_APPLY()
                 self.select.sports("tennis")
                 self.select.players(players)
-                # 確認ボタンクリック  
+                # 確認ボタンクリック
                 self.go.BTN_CHECK()
                 if self.is_entry_verified() is False:
                     input(entry)
                     raise RuntimeError("予定と違う")
                 # 確定ボタンクリック
-                self.go.BTN_CONFIRM()            
+                self.go.BTN_CONFIRM()
                 self.select.alert_switch(True)
                 # errorメッセージ確認
 
-    def is_entry_verified(self,entry:LotteryEntry) -> bool:
-        confirm_entry= self.fetcher.lottery.confirm_entry()
-        return confirm_entry == entry 
-    
+    def is_entry_verified(self, entry: LotteryEntry) -> bool:
+        confirm_entry = self.fetcher.lottery.confirm_entry()
+        return confirm_entry == entry

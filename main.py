@@ -21,9 +21,9 @@ def test():
         id=settings.ACCOUNT_ID, password=settings.ACCOUNT_PASSWORD, name="me"
     )
     netaichi.login(account)
-    for _ in netaichi.go.reservation_list():
-        input("next?")
+    print(netaichi.all_entries())
     netaichi.logout()
+    netaichi.browser.quit()
 
 
 # 自分用

@@ -10,6 +10,7 @@ class ModuleBase:
         self.site = site
         self.browser: ChromeBrowser = site.browser
         self.logger: AppLogger = site.browser.logger
+        self.error_handler = site.error_handler
 
     def __init_subclass__(cls, **kwargs):
         super().__init_subclass__(**kwargs)

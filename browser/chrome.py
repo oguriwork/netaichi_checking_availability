@@ -12,7 +12,7 @@ from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.select import Select
 from selenium.webdriver.support.ui import WebDriverWait
-
+from selenium.common.exceptions import NoSuchElementException
 from browser.constants import ScrollPosition
 from utils import AppLogger
 
@@ -188,7 +188,7 @@ class ChromeBrowser:
 
         elements = self.get_elements(selector, by, base)
         if not elements or index >= len(elements):
-            raise RuntimeError(
+            raise NoSuchElementException(
                 f"Element not found for selector: {selector} with index: {index}"
             )
 

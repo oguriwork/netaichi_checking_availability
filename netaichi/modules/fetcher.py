@@ -87,14 +87,13 @@ class Fetcher(ModuleBase):
     # lottery_list
     def entry(self) -> Iterator[LotteryEntry]:
         rows = self.browser.get_elements("table.tablebg2 tbody tr")
-        for idx, row in enumerate(rows):
-            if idx in {0, 1, 7}:
-                continue  # ヘッダーとフッターをスキップ
-            yield self._parse_row(row)
+        for row in rows:
+            if row.find_elements(By.CSS_SELECTOR, ":scope > .s-243m"):
+                yield self._parse_row(row)
 
     # lottery_list
     def _parse_row(self, row: WebElement) -> LotteryEntry:
-        link = self.browser.get_element("内容確認", By.LINK_TEXT, base=row)
+        link = self.browser.get_element("内容確認", By.PARTIAL_LINK_TEXT, base=row)
         date_text = self.browser.get_element_by_css(
             self.selectors.DATE, base=row
         ).text.strip()
@@ -124,7 +123,6 @@ class Fetcher(ModuleBase):
             raise ValueError(
                 f"必須データが不足: date={date}, start={start}, end={end}, value={value}, amount={amount}"
             )
-
         return LotteryEntry(
             date=date,
             start=start,

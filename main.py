@@ -13,7 +13,8 @@ def db_init():
 
 
 def reserve():
-    pass
+    netaichi.notlogin_reserve()
+    
 
 
 def test():

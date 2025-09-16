@@ -16,8 +16,8 @@ class Selector:
     STATUS_ZONE = "#allTzonecnt"  # 時間帯
     STATUS_ALL = "#allTimeLabel"  # 合計時間
     MYPAGE_AMOUNTS = "#lotNum"
-    
-     # BTN
+
+    # BTN
     BTN_RESERVE = 'input[value="上記の内容で検索する"]'
     BTN_LOGIN = 'input[value="ログイン"]'
     BTN_LOGOUT = 'input[value="ログアウト"]'
@@ -34,33 +34,36 @@ class Selector:
     # SELECT
     BTN_COURT2 = 'input[value="選択"]'
 
-    SELECT_AMOUNT = '#selectFieldCnt'
+    SELECT_AMOUNT = "#selectFieldCnt"
     SELECT_CHECKBOX = 'input[name="selectKomaNo"]'
-    SELECT_SPORTS = '#selectPurpose'
-    SELECT_PLAYERS = '#applyPepopleNum'
+    SELECT_SPORTS = "#selectPurpose"
+    SELECT_PLAYERS = "#applyPepopleNum"
 
-    drawChekcks = '.tablebg2 .s-243m'
+    drawChekcks = ".tablebg2 .s-243m"
+
+
 class Select(ModuleBase):
+    selectors: Selector
 
     def 未ログイン_エリア(self):
-        self.browser.click(self.selecters.BTN_RESERVE)
-    def 未ログイン_コート選択(self):
-        self.browser.click(self.selecters.BTN_COURT2)
+        self.browser.click(self.selectors.BTN_RESERVE)
 
+    def 未ログイン_コート選択(self):
+        self.browser.click(self.selectors.BTN_COURT2)
 
     def court(self, value: str):
-        self.jsp.select_radio_by_value(value)
-        self.jsp.click(Selecter.BTN_COURT)
+        self.browser.select_radio_by_value(value)
+        self.browser.click(self.selectors.BTN_COURT)
         # 施設によって細分化されてる場合はここから分岐
-        self.jsp.click(Selecter.BTN_AREA)
+        self.browser.click(self.selectors.BTN_AREA)
 
     def time(self, start, end, span=2):
-        times = self.jsp.get.times()
+        times = self.browser.get.times()
 
         start_i = times.index(start)
         end_i = times.index(end - span)
         checks = [i for i in range(start_i, end_i + 1)]
-        check_boxs = self.jsp.get_elements_by_css(Selecter.SELECT_CHECKBOX)
+        check_boxs = self.browser.get_elements_by_css(self.selectors.SELECT_CHECKBOX)
         selected_boxs = [c.is_selected() for c in check_boxs]
         is_enabled = [c.is_enabled() for c in check_boxs]
 
@@ -76,32 +79,33 @@ class Select(ModuleBase):
                 check_box = check_boxs[c]
                 check_box.click()
             else:
-                print(f'checks {checks}')
-                print(f'is_enabled[c] {is_enabled[c]}')
+                print(f"checks {checks}")
+                print(f"is_enabled[c] {is_enabled[c]}")
                 return False
         return True
 
     def date(self, date):
-        self.jsp.js_exec(
-            f'javascript:selectCalendarDate({date.year},{
-                date.month},{date.day})')
+        self.browser.js_exec(
+            f"javascript:selectCalendarDate({date.year},{date.month},{date.day})"
+        )
 
     def amount(self, amount):
-        self.jsp.select_pulldown(Selecter.SELECT_AMOUNT, amount)
+        self.browser.select_pulldown(self.selectors.SELECT_AMOUNT, amount)
 
     def sports(self):
-        self.jsp.select_by_value(self.jsp.get_element_by_css(
-            Selecter.SELECT_SPORTS), '1000-10000010')
+        self.browser.select_by_value(
+            self.browser.get_element_by_css(self.selectors.SELECT_SPORTS),
+            "1000-10000010",
+        )
 
     def players(self, num):
-        self.jsp.send_form(Selecter.SELECT_PLAYERS, num)
+        self.browser.send_form(self.selectors.SELECT_PLAYERS, num)
 
     def data(self):
         pass
 
-
     def time_checkbox(self):
         pass
+
     def alert_switch(self):
         pass
-    

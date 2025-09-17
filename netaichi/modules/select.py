@@ -1,6 +1,6 @@
 from ..module_base import ModuleBase
 from dataclasses import dataclass
-
+from selenium.webdriver.remote.webelement import WebElement
 
 @dataclass(frozen=True)
 class Selector:
@@ -56,33 +56,33 @@ class Select(ModuleBase):
         self.browser.click(self.selectors.BTN_COURT)
         # 施設によって細分化されてる場合はここから分岐
         self.browser.click(self.selectors.BTN_AREA)
+    def clear_selected_checkboxes(self, check_boxes: list[WebElement]) -> None:
+        """選択済みのチェックボックスをクリアする"""
+        for cb in check_boxes:
+            if cb.is_selected():
+                cb.click()
 
-    def time(self, start, end, span=2):
-        times = self.browser.get.times()
+    def select_target_checkboxes(self, check_boxes: list[WebElement], 
+                                target_indices: list[int], enabled_states: list[bool]) -> bool:
+        """対象のチェックボックスを選択する"""
+        for i in target_indices:
+            if not enabled_states[i]:
+                return False
+            check_boxes[i].click()
+        return True
+    
+    def time(self, times: list[WebElement], start: int, end: int, span: int = 2) -> bool:
+        """指定された時間範囲のチェックボックスを選択する"""
 
         start_i = times.index(start)
         end_i = times.index(end - span)
-        checks = [i for i in range(start_i, end_i + 1)]
-        check_boxs = self.browser.get_elements_by_css(self.selectors.SELECT_CHECKBOX)
-        selected_boxs = [c.is_selected() for c in check_boxs]
-        is_enabled = [c.is_enabled() for c in check_boxs]
-
-        if any(is_enabled) is False:
+        check_boxes = self.browser.get_elements_by_css(self.selectors.SELECT_CHECKBOX)
+        target_indices = list(range(start_i, end_i + 1))
+        enabled_states = [cb.is_enabled() for cb in check_boxes]
+        if not any(enabled_states):
             return False
-        if any(selected_boxs):
-            for i in range(len(selected_boxs)):
-                if selected_boxs[i]:
-                    check_boxs[i].click()
-
-        for c in checks:
-            if is_enabled[c]:
-                check_box = check_boxs[c]
-                check_box.click()
-            else:
-                print(f"checks {checks}")
-                print(f"is_enabled[c] {is_enabled[c]}")
-                return False
-        return True
+        self.clear_selected_checkboxes(check_boxes)
+        return self.select_target_checkboxes(check_boxes, target_indices, enabled_states)
 
     def date(self, date):
         self.browser.js_exec(

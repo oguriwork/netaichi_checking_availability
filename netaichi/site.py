@@ -92,7 +92,9 @@ class NetAichi:
                     continue
                 self.select.date(entry.date)
                 self.select.amount(entry.amount)
+                
                 self.select.time_checkbox(
+                    self.fetcher.time_checkbox(),
                     entry.start,
                     entry.end,
                 )

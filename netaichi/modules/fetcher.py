@@ -83,6 +83,9 @@ class Fetcher(ModuleBase):
             int(normalize("NFKC", time.text[:-2]))
             for time in self.browser.get_elements_by_css(self.selectors.TIMES)
         ]
+    def time_checkbox(self) -> list[WebElement]:
+        return self.browser.get_elements_by_css(self.selectors.TIMES)
+
 
     # lottery_list
     def entry(self) -> Iterator[LotteryEntry]:

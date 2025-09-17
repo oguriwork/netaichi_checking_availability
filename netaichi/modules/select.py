@@ -1,7 +1,7 @@
 from ..module_base import ModuleBase
 from dataclasses import dataclass
 from selenium.webdriver.remote.webelement import WebElement
-
+from datetime import date as Date
 @dataclass(frozen=True)
 class Selector:
     DATE = "#useymdLabel"
@@ -10,7 +10,7 @@ class Selector:
     COURT = "#clsnamem"
     AMOUNT = "#field"
     RESULT = "#lotStateLabel"
-    TIMES = "#komanamem"
+    
     # STATUS
     STATUS_COUNT = "#allCount"  # 件数
     STATUS_ZONE = "#allTzonecnt"  # 時間帯
@@ -71,7 +71,7 @@ class Select(ModuleBase):
             check_boxes[i].click()
         return True
     
-    def time(self, times: list[WebElement], start: int, end: int, span: int = 2) -> bool:
+    def time_checkbox(self, times: list[WebElement], start: int, end: int, span: int = 2) -> bool:
         """指定された時間範囲のチェックボックスを選択する"""
 
         start_i = times.index(start)
@@ -84,12 +84,12 @@ class Select(ModuleBase):
         self.clear_selected_checkboxes(check_boxes)
         return self.select_target_checkboxes(check_boxes, target_indices, enabled_states)
 
-    def date(self, date):
+    def date(self, date:Date):
         self.browser.js_exec(
             f"javascript:selectCalendarDate({date.year},{date.month},{date.day})"
         )
 
-    def amount(self, amount):
+    def amount(self, amount:int):
         self.browser.select_pulldown(self.selectors.SELECT_AMOUNT, amount)
 
     def sports(self):
@@ -98,13 +98,10 @@ class Select(ModuleBase):
             "1000-10000010",
         )
 
-    def players(self, num):
+    def players(self, num:int):
         self.browser.send_form(self.selectors.SELECT_PLAYERS, num)
 
     def data(self):
-        pass
-
-    def time_checkbox(self):
         pass
 
     def alert_switch(self):

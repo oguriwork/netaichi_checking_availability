@@ -10,14 +10,12 @@ from typing import Optional
 
 
 @dataclass
-class LotteryEntry:
+class CourtEntry:
     date: datetime
     start: int
     end: int
     value: str
     amount: int
-    link: Optional[WebElement]
-    row: Optional[WebElement]
     account_group: Optional[str] = None
 
     def __post_init__(self):
@@ -26,11 +24,33 @@ class LotteryEntry:
         if 1 > self.amount:
             raise ValueError("コート面数は1以上である必要があります")
         if not self.value.strip():
-            raise ValueError("コートValueは空にできません")
+            raise ValueError("コートValueは空にできません")   
+    def key(self) -> tuple:
+        return (
+            self.date,
+            self.start,
+            self.end,
+            self.value,
+            self.amount,
+        )
+    def __eq__(self, other) -> bool:
+        if not isinstance(other, CourtEntry):
+            return False
+        return self.key() == other.key()
+    
+@dataclass
+class LotteryEntry(CourtEntry):
+    link: Optional[WebElement]
+    row: Optional[WebElement]
+    
 
+    def duration_minutes(self) -> int:
+        """予約時間の長さを返す"""
+        return self.end - self.start
+
+    
     def core(self) -> LotteryEntry:
         return replace(self, link=None, row=None)
-
     def to_record(self) -> T_LotteryEntryRecord:
         if not self.account_group:
             raise ValueError("アカウントグループは必須です")
@@ -42,21 +62,3 @@ class LotteryEntry:
             amount=self.amount,
             account_group=self.account_group,
         )
-
-    def key(self) -> tuple:
-        return (
-            self.date,
-            self.start,
-            self.end,
-            self.value,
-            self.amount,
-        )
-
-    def duration_minutes(self) -> int:
-        """予約時間の長さを分で返す"""
-        return self.end - self.start
-
-    def __eq__(self, other) -> bool:
-        if not isinstance(other, LotteryEntry):
-            return False
-        return self.key() == other.key()

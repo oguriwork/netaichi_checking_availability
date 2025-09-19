@@ -116,7 +116,8 @@ class NetAichi:
         confirm_entry = self.fetcher.lottery.confirm_entry()
         return confirm_entry == entry
 
-    def get_reserved_court_list(self):
+    def yield_reserve_(self):
+        # LotteryEntryを共通化したらいけるんちゃう？
         for _ in self.go.reservation_list():
             for entry in self.fetcher.entry():
                 yield entry

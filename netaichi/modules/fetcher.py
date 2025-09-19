@@ -96,6 +96,7 @@ class Fetcher(ModuleBase):
 
     # lottery_list
     def _parse_row(self, row: WebElement) -> LotteryEntry:
+        # 内容確認が input[選択]になる
         link = self.browser.get_element("内容確認", By.PARTIAL_LINK_TEXT, base=row)
         date_text = self.browser.get_element_by_css(
             self.selectors.DATE, base=row

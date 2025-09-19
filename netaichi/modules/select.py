@@ -48,8 +48,8 @@ class Select(ModuleBase):
     def 未ログイン_エリア(self):
         self.browser.click(self.selectors.BTN_RESERVE)
 
-    def 未ログイン_コート選択(self):
-        self.browser.click(self.selectors.BTN_COURT2)
+    def 未ログイン_コート選択(self,element:WebElement):
+        self.browser.click(self.selectors.BTN_COURT2,base=element)
 
     def court(self, value: str):
         self.browser.select_radio_by_value(value)

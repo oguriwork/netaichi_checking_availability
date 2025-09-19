@@ -115,3 +115,8 @@ class NetAichi:
     def is_entry_verified(self, entry: LotteryEntry) -> bool:
         confirm_entry = self.fetcher.lottery.confirm_entry()
         return confirm_entry == entry
+
+    def get_reserved_court_list(self):
+        for _ in self.go.reservation_list():
+            for entry in self.fetcher.entry():
+                yield entry

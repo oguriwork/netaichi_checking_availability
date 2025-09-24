@@ -3,7 +3,8 @@ from dataclasses import dataclass
 from datetime import datetime as dd
 from typing import Iterator
 from unicodedata import normalize
-
+import pandas as pd
+from pathlib import Path
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
 
@@ -163,3 +164,29 @@ class Fetcher(ModuleBase):
             link=None,
             row=None,
         )
+
+    def reserve_csv(self):
+        # 元ファイル名（ダウンロードされる固定の名前）
+        original_path = download_dir / "sample.csv" 
+        timeout = 60
+        start = time.time()
+        while True:
+            if original_path.exists() and not (original_path.with_suffix(original_path.suffix + ".crdownload")).exists():
+                break
+            if time.time() - start > timeout:
+                raise TimeoutError("ダウンロードがタイムアウトしました")
+            time.sleep(1)
+
+        # 保存先（アカウントID名にリネーム）
+        new_path = download_dir / f"{self.site.auth.logged_account.id}.csv"
+
+        # 上書き保存（既にあれば削除してからリネーム）
+        if new_path.exists():
+            new_path.unlink()
+
+        original_path.rename(new_path)
+        print(f"保存完了: {new_path}")
+
+        # 読み込み確認（必要なら）
+        df = pd.read_csv(new_path)
+        print(df.head())

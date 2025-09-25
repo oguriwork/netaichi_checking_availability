@@ -69,8 +69,8 @@ class NetAichi:
 
     def __get_amount(self) -> list[int]:
         self.go.mypage()
-        elements = self.fetcher.mypage_amounts()
-        return [int(e.text) for e in elements]
+        return self.fetcher.mypage_amounts()
+       
 
     def lottery_amount(self) -> int:
         return self.__get_amount()[1]

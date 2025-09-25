@@ -138,8 +138,9 @@ class Fetcher(ModuleBase):
             row=row,
         )
 
-    def mypage_amounts(self) -> list[WebElement]:
-        return self.browser.get_elements_by_css(self.selectors.MYPAGE_AMOUNTS)
+    def mypage_amounts(self) -> list[int]:
+        self.browser.get_elements_by_css(self.selectors.MYPAGE_AMOUNTS)
+        return [int(e.text) for e in elements]
 
     def confirm_entry(self) -> LotteryEntry:
         court_name = self.browser.get_element_by_css(
@@ -165,28 +166,3 @@ class Fetcher(ModuleBase):
             row=None,
         )
 
-    def reserve_csv(self):
-        # 元ファイル名（ダウンロードされる固定の名前）
-        original_path = download_dir / "sample.csv" 
-        timeout = 60
-        start = time.time()
-        while True:
-            if original_path.exists() and not (original_path.with_suffix(original_path.suffix + ".crdownload")).exists():
-                break
-            if time.time() - start > timeout:
-                raise TimeoutError("ダウンロードがタイムアウトしました")
-            time.sleep(1)
-
-        # 保存先（アカウントID名にリネーム）
-        new_path = download_dir / f"{self.site.auth.logged_account.id}.csv"
-
-        # 上書き保存（既にあれば削除してからリネーム）
-        if new_path.exists():
-            new_path.unlink()
-
-        original_path.rename(new_path)
-        print(f"保存完了: {new_path}")
-
-        # 読み込み確認（必要なら）
-        df = pd.read_csv(new_path)
-        print(df.head())

@@ -2,6 +2,8 @@ from ..module_base import ModuleBase
 from dataclasses import dataclass
 from selenium.webdriver.remote.webelement import WebElement
 from datetime import date as Date
+
+
 @dataclass(frozen=True)
 class Selector:
     DATE = "#useymdLabel"
@@ -10,7 +12,7 @@ class Selector:
     COURT = "#clsnamem"
     AMOUNT = "#field"
     RESULT = "#lotStateLabel"
-    
+
     # STATUS
     STATUS_COUNT = "#allCount"  # 件数
     STATUS_ZONE = "#allTzonecnt"  # 時間帯
@@ -48,30 +50,37 @@ class Select(ModuleBase):
     def 未ログイン_エリア(self):
         self.browser.click(self.selectors.BTN_RESERVE)
 
-    def 未ログイン_コート選択(self,element:WebElement):
-        self.browser.click(self.selectors.BTN_COURT2,base=element)
+    def 未ログイン_コート選択(self, element: WebElement):
+        self.browser.click(self.selectors.BTN_COURT2, base=element)
 
     def court(self, value: str):
         self.browser.select_radio_by_value(value)
         self.browser.click(self.selectors.BTN_COURT)
         # 施設によって細分化されてる場合はここから分岐
         self.browser.click(self.selectors.BTN_AREA)
+
     def clear_selected_checkboxes(self, check_boxes: list[WebElement]) -> None:
         """選択済みのチェックボックスをクリアする"""
         for cb in check_boxes:
             if cb.is_selected():
                 cb.click()
 
-    def select_target_checkboxes(self, check_boxes: list[WebElement], 
-                                target_indices: list[int], enabled_states: list[bool]) -> bool:
+    def select_target_checkboxes(
+        self,
+        check_boxes: list[WebElement],
+        target_indices: list[int],
+        enabled_states: list[bool],
+    ) -> bool:
         """対象のチェックボックスを選択する"""
         for i in target_indices:
             if not enabled_states[i]:
                 return False
             check_boxes[i].click()
         return True
-    
-    def time_checkbox(self, times: list[WebElement], start: int, end: int, span: int = 2) -> bool:
+
+    def time_checkbox(
+        self, times: list[int], start: int, end: int, span: int = 2
+    ) -> bool:
         """指定された時間範囲のチェックボックスを選択する"""
 
         start_i = times.index(start)
@@ -82,14 +91,16 @@ class Select(ModuleBase):
         if not any(enabled_states):
             return False
         self.clear_selected_checkboxes(check_boxes)
-        return self.select_target_checkboxes(check_boxes, target_indices, enabled_states)
+        return self.select_target_checkboxes(
+            check_boxes, target_indices, enabled_states
+        )
 
-    def date(self, date:Date):
+    def date(self, date: Date):
         self.browser.js_exec(
             f"javascript:selectCalendarDate({date.year},{date.month},{date.day})"
         )
 
-    def amount(self, amount:int):
+    def amount(self, amount: int):
         self.browser.select_pulldown(self.selectors.SELECT_AMOUNT, amount)
 
     def sports(self):
@@ -98,7 +109,7 @@ class Select(ModuleBase):
             "1000-10000010",
         )
 
-    def players(self, num:int):
+    def players(self, num: int):
         self.browser.send_form(self.selectors.SELECT_PLAYERS, num)
 
     def data(self):

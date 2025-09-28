@@ -3,7 +3,8 @@ from dataclasses import dataclass
 from datetime import datetime as dd
 from typing import Iterator
 from unicodedata import normalize
-
+import pandas as pd
+from pathlib import Path
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
 
@@ -39,7 +40,7 @@ class Selector:
     LOTTERY_CHECK_COURT = "#clsnamem"
     LOTTERY_CHECK_AMOUNT = "#selectFieldCnt"
     LOTTERY_CHECK_PLAYERS = "#applycnt"
-
+    
 
 class Fetcher(ModuleBase):
     selectors: Selector
@@ -47,6 +48,11 @@ class Fetcher(ModuleBase):
 
     # lotterypage
     def lottery_status(self) -> LotteryStatus:
+        DL =".smenu > dl"
+        DT = "dt"
+        DD = "dd"
+        COUNT_SUFFIX = "件"
+        TOTAL_APPLICATIONS_TEXT = "申し込み合計"
         summary_alltime = self.browser.get_element_by_css(
             self.selectors.STATUS_ALL
         ).text
@@ -55,16 +61,16 @@ class Fetcher(ModuleBase):
             self.selectors.STATUS_COUNT
         ).text
         soup = self.browser.get_html()
-        dl = soup.select_one(".smenu > dl")
+        dl = soup.select_one(DL)
         if dl is None:
             raise ValueError("court info not found")
-        court_names = dl.select("dt")
-        court_counts = dl.select("dd")
+        court_names = dl.select(DT)
+        court_counts = dl.select(DD)
         court_infos = []
         for name, count in zip(court_names, court_counts):
             name = name.text
-            count = int(count.text.split("件")[0])
-            if name == "申し込み合計":
+            count = int(count.text.split(COUNT_SUFFIX)[0])
+            if name == TOTAL_APPLICATIONS_TEXT:
                 continue
             value = self.site.courts.to_value(name)
             court_info = CourtInfo(value=value, applications=count, name=name)
@@ -86,9 +92,8 @@ class Fetcher(ModuleBase):
     def time_checkbox(self) -> list[WebElement]:
         return self.browser.get_elements_by_css(self.selectors.TIMES)
 
-
-    # lottery_list
-    def entry(self) -> Iterator[LotteryEntry]:
+      # lottery_list
+    def lottery_entry(self) -> Iterator[LotteryEntry]:
         rows = self.browser.get_elements("table.tablebg2 tbody tr")
         for row in rows:
             if row.find_elements(By.CSS_SELECTOR, ":scope > .s-243m"):
@@ -96,7 +101,6 @@ class Fetcher(ModuleBase):
 
     # lottery_list
     def _parse_row(self, row: WebElement) -> LotteryEntry:
-        # 内容確認が input[選択]になる
         link = self.browser.get_element("内容確認", By.PARTIAL_LINK_TEXT, base=row)
         date_text = self.browser.get_element_by_css(
             self.selectors.DATE, base=row
@@ -137,8 +141,12 @@ class Fetcher(ModuleBase):
             row=row,
         )
 
-    def mypage_amounts(self) -> list[WebElement]:
-        return self.browser.get_elements_by_css(self.selectors.MYPAGE_AMOUNTS)
+    def reserve_entry(self):
+        
+
+    def mypage_amounts(self) -> list[int]:
+        self.browser.get_elements_by_css(self.selectors.MYPAGE_AMOUNTS)
+        return [int(e.text) for e in elements]
 
     def confirm_entry(self) -> LotteryEntry:
         court_name = self.browser.get_element_by_css(
@@ -163,3 +171,4 @@ class Fetcher(ModuleBase):
             link=None,
             row=None,
         )
+

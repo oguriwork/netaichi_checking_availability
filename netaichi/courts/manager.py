@@ -15,7 +15,6 @@ class CourtManager:
         self.registry: dict[str, CourtBase] = {}
         self._instances: list[CourtBase] = []
 
-        # 重複チェック用
         names = set()
         values = set()
 

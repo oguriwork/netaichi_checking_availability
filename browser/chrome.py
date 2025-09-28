@@ -56,8 +56,15 @@ class ChromeBrowser:
         for option in OPTIONS:
             options.add_argument(option)
 
+        download_dir = Path("./downloads").resolve()
+        download_dir.mkdir(parents=True, exist_ok=True)
+
         options.add_experimental_option(
-            "excludeSwitches", ["enable-automation", "enable-logging"]
+            "excludeSwitches", ["enable-automation", "enable-logging"],
+            "download.default_directory": str(download_dir),
+            "download.prompt_for_download": False,
+            "directory_upgrade": True,
+            "safebrowsing.enabled": True
         )
 
         options.timeouts = {"implicit": self.default_timeout * 1000}

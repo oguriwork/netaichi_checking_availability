@@ -61,7 +61,7 @@ class NetAichi:
 
     def yield_lottery_entries(self) -> Iterator[LotteryEntry]:
         for _ in self.go.lottery_list():
-            for entry in self.fetcher.entry():
+            for entry in self.fetcher.lottery_entry():
                 yield entry
 
     def all_entries(self) -> list[LotteryEntry]:
@@ -69,8 +69,8 @@ class NetAichi:
 
     def __get_amount(self) -> list[int]:
         self.go.mypage()
-        elements = self.fetcher.mypage_amounts()
-        return [int(e.text) for e in elements]
+        return self.fetcher.mypage_amounts()
+       
 
     def lottery_amount(self) -> int:
         return self.__get_amount()[1]
@@ -119,5 +119,26 @@ class NetAichi:
     def yield_reserve_(self):
         # LotteryEntryを共通化したらいけるんちゃう？
         for _ in self.go.reservation_list():
-            for entry in self.fetcher.entry():
-                yield entry
+            soup = self.browser.get_html()
+            dates = soup.select(Selecter.RESERVE_DATA_DATE)
+            courts = soup.select(Selecter.RESERVE_DATA_COURT)
+            if len(dates) != len(courts):
+                raise RuntimeError(ErrorMessage.RESERVATION_DATA)
+            for i in range(len(dates)):
+                date_split = normalize('NFKD', dates[i].text).split(' ')
+                court_split = normalize('NFKD', courts[i].text).split(' ')
+                date = self.jsp.to_datetime(date_split[0])
+                # week = date_split[1]
+                start = date_split[2].removesuffix('時')
+                end = date_split[4].removesuffix('時')
+                court = court_split[0]
+                court_number = court_split[2][court_split[2].find(
+                    '場')+1:court_split[2].find('(')]
+                temp.append({
+                    'court': court,
+                    'court_number': court_number,
+                    'date': date,
+                    'start': start,
+                    'end': end,
+                    'account': self.jsp.logged_account.id
+                })

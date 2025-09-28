@@ -45,7 +45,6 @@ class LotteryEntry(CourtEntry):
     
 
     def duration_minutes(self) -> int:
-        """予約時間の長さを返す"""
         return self.end - self.start
 
     
